@@ -3,6 +3,7 @@
 # dependencies
 menu-fend/node_modules
 api-server/node_modules
+api-server/dbconfig.js
 
 # testing
 /coverage

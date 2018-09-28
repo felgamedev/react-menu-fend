@@ -1,15 +1,42 @@
 import React, { Component } from 'react';
-import AllergenList from './components/AllergenList'
-import Ingredient from './components/Ingredient'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Header from './components/ui/Header'
+import Menu from './components/Menu'
 import Allergen from './objects/Allergen'
 import './App.css';
 
 class App extends Component {
   state = {
     allergens: [],
-    user: {}
+    user: {},
+    menu: [{
+      title: "Regular Menu",
+      submenus: [
+        {
+          title: "Starters",
+          items: [{
+              menuItemName: "Sweet Apple Salad" },
+             {
+               menuItemName: "Beet Salad"
+             }, {
+               menuItemName: "Fish Cakes"
+             } ]
+        },
+        {
+          title: "Pizzas",
+          items: [{
+              menuItemName: "BBQ Chicken" },
+             {
+               menuItemName: "3 Cheese"
+             }, {
+               menuItemName: "Meat Lovers"
+             } ]
+        }
+      ]
+    },
+    {
+      title: "Catering Menu"
+    }]
   }
 
   componentWillMount(){
@@ -46,9 +73,8 @@ class App extends Component {
     return (
       <div className="App">
         <Header user={this.state.user}/>
-        <AllergenList allergens={this.state.allergens}/>
-        <Ingredient name="Organic Brown Rice"/>
         <Router>
+          <Route exact path="/" render={() => <Menu menu={this.state.menu[0]}/>} />
         </Router>
       </div>
     );

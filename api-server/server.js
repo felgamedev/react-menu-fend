@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const app = express()
 const dbConfig = require('./dbconfig')
 const Test = require('./app/models/test')
+const Allergen = require('./app/models/allergen')
 
 // Define a port to listen on for local testing
 const PORT = 8000
@@ -39,7 +40,18 @@ router.route('/tests')
       if(err) res.send(err)
       res.json({ message: "Test successfully added "})
     })
-  })
+  });
+
+router.route('/new-allergen')
+  .post((req, res) => {
+    var allergen = new Allergen();
+    allergen.name = req.body.name
+
+    allergen.save((err) => {
+      if(err) res.send(err)
+      res.json({ message: "Added allergen" })
+    })
+  });
 // Start up the API listener
 app.listen(PORT, () => {
   console.log('Listening on port' + PORT);

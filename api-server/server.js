@@ -5,6 +5,7 @@ const app = express()
 const dbConfig = require('./dbconfig')
 const Test = require('./app/models/test')
 const Allergen = require('./app/models/allergen')
+const Ingredient = require('./app/models/ingredient')
 
 // Define a port to listen on for local testing
 const PORT = 8000
@@ -58,6 +59,23 @@ router.route('/allergens')
       res.json(allergens)
     })
   });
+
+router.route('/ingredients')
+  .post((req, res) => {
+    var ingredient = new Ingredient();
+    ingredient.name = req.body.name
+    ingredient.alternativeName = req.body.alternativeName
+    ingredient.brandName = req.body.brandName
+    ingredient.allergens = req.body.allergens
+
+    ingredient.save((err) => {
+      if(err) res.send(err)
+      res.json({ message: "Ingredient added successfully!"})
+    })
+
+  })
+
+
 // Start up the API listener
 app.listen(PORT, () => {
   console.log('Listening on port' + PORT);

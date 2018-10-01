@@ -42,7 +42,7 @@ router.route('/tests')
     })
   });
 
-router.route('/new-allergen')
+router.route('/allergens')
   .post((req, res) => {
     var allergen = new Allergen();
     allergen.name = req.body.name
@@ -50,6 +50,12 @@ router.route('/new-allergen')
     allergen.save((err) => {
       if(err) res.send(err)
       res.json({ message: "Added allergen" })
+    })
+  })
+  .get((req, res) => {
+    Allergen.find((err, allergens) => {
+      if(err) res.send(err)
+      res.json(allergens)
     })
   });
 // Start up the API listener

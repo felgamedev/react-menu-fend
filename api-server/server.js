@@ -6,6 +6,7 @@ const dbConfig = require('./dbconfig')
 const Test = require('./app/models/test')
 const Allergen = require('./app/models/allergen')
 const Ingredient = require('./app/models/ingredient')
+const FoodComponent = require('./app/models/foodcomponent')
 
 // Define a port to listen on for local testing
 const PORT = 8000
@@ -45,7 +46,7 @@ router.route('/tests')
 
 router.route('/allergens')
   .post((req, res) => {
-    var allergen = new Allergen();
+    var allergen = new Allergen()
     allergen.name = req.body.name
 
     allergen.save((err) => {
@@ -62,7 +63,7 @@ router.route('/allergens')
 
 router.route('/ingredients')
   .post((req, res) => {
-    var ingredient = new Ingredient();
+    var ingredient = new Ingredient()
     ingredient.name = req.body.name
     ingredient.alternativeName = req.body.alternativeName
     ingredient.brandName = req.body.brandName
@@ -74,7 +75,30 @@ router.route('/ingredients')
     })
 
   })
+  .get((req, res) => {
+    Ingredient.find((err, ingredients) => {
+      if(err) res.send(err)
+      res.json(ingredients)
+    })
+  });
 
+router.route('/foodcomponent')
+  .post((req, res) => {
+    var foodComponent = new FoodComponent()
+    foodComponent.name = req.body.name
+    foodComponent.ingredients = req.body.ingredients
+
+    foodComponent.save((err) => {
+      if(err) res.send(err)
+      res.json({ message: "Food component added successfully"})
+    })
+  })
+  .get((req, res) => {
+    FoodComponent.find((err, foodComponents) => {
+      if(err) res.send(err)
+      res.json(foodComponents)
+    })
+  })
 
 // Start up the API listener
 app.listen(PORT, () => {

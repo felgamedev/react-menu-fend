@@ -75,15 +75,6 @@ router.route('/ingredients')
     })
 
   })
-<<<<<<< HEAD
-  .get((req, res) => {
-    Ingredient.find((err, ingredients) => {
-      if(err) res.send(err)
-      res.json(ingredients)
-    })
-  });
-||||||| merged common ancestors
-=======
   .get((req, res) => {
     Ingredient.find((err, ingredients) => {
       if(err) res.send(err)
@@ -91,14 +82,6 @@ router.route('/ingredients')
     })
   });
 
-router.route('/foodcomponent')
-  .post((req, res) => {
-    var foodComponent = new FoodComponent()
-    foodComponent.name = req.body.name
-    foodComponent.ingredients = req.body.ingredients
->>>>>>> 668f4ab5622832bb2e56243aae2f65f91a2bbfb5
-
-<<<<<<< HEAD
 router.route('/foodcomponent')
   .post((req, res) => {
     var foodComponent = new FoodComponent()
@@ -116,17 +99,6 @@ router.route('/foodcomponent')
       res.json(foodComponents)
     })
   })
-||||||| merged common ancestors
-=======
-    foodComponent.save((err) => {
-      if(err) res.send(err)
-      res.json({ message: "Food component added successfully"})
-    })
-  })
-  .get((req, res) => {
-
-  })
->>>>>>> 668f4ab5622832bb2e56243aae2f65f91a2bbfb5
 
 // Start up the API listener
 app.listen(PORT, () => {

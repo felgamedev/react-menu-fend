@@ -18,7 +18,7 @@ class Menu extends Component {
     return (
       <div className="menu-list">
         <h3>{this.state.menuName}</h3>
-        {this.state.submenus && this.state.submenus.map(submenu => <Submenu submenu={submenu}/>)}
+        {this.state.submenus && this.state.submenus.map(submenu => <Submenu submenu={submenu} key={submenu.title}/>)}
       </div>
     )
   }

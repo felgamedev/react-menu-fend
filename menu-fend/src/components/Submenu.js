@@ -7,7 +7,7 @@ class Submenu extends Component {
       <div>
         <h3>{this.props.submenu.title}</h3>
         <ul>
-          {this.props.submenu.items.map(item => <li key={item.title}>{item.menuItemName}</li>)}
+          {this.props.submenu.items.map(item => <li key={item.menuItemName}>{item.menuItemName}</li>)}
         </ul>
       </div>)
   }

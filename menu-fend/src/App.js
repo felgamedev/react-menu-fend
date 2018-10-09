@@ -77,6 +77,9 @@ class App extends Component {
         <Header user={this.state.user}/>
         <Router>
           <div>
+            <Link to="/"><div>Home</div></Link>
+            <Link to="/allergen"><div>Allergens Form</div></Link>
+
             <Route exact path="/" render={() => <Menu menu={this.state.menu[0]}/>} />
             <Route exact path="/allergen" render={() => <AllergenForm />} />
             <Route exact path="/ingredient" render={() => <IngredientForm />} />

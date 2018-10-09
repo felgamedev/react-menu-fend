@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Header from './components/ui/Header'
 import Menu from './components/Menu'
-import AllergenForm from './components/ui/AllergenForm.js'
+import AllergenForm from './components/ui/AllergenForm'
+import IngredientForm from './components/ui/IngredientForm'
 import Allergen from './objects/Allergen'
 import './App.css';
 
@@ -77,7 +78,8 @@ class App extends Component {
         <Router>
           <div>
             <Route exact path="/" render={() => <Menu menu={this.state.menu[0]}/>} />
-            <Route exact path="/new-allergen" render={() => <AllergenForm />}/>
+            <Route exact path="/allergen" render={() => <AllergenForm />} />
+            <Route exact path="/ingredient" render={() => <IngredientForm />} />
           </div>
         </Router>
       </div>

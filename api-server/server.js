@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const app = express()
 const dbConfig = require('./dbconfig')
+
+// Models
 const Test = require('./app/models/test')
 const Allergen = require('./app/models/allergen')
 const Ingredient = require('./app/models/ingredient')
@@ -24,6 +26,8 @@ app.use('/api', router)
 
 // Middleware for extra processing
 router.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://192.168.0.5:3000")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
   console.log("Simulating some processing on " + req)
   next()
 })
@@ -44,14 +48,15 @@ router.route('/tests')
     })
   });
 
-router.route('/allergens')
+router.route('/allergen')
   .post((req, res) => {
     var allergen = new Allergen()
+    console.log(req.body);
     allergen.name = req.body.name
 
     allergen.save((err) => {
       if(err) res.send(err)
-      res.json({ message: "Added allergen" })
+      res.json({ "message": "Added allergen" });
     })
   })
   .get((req, res) => {

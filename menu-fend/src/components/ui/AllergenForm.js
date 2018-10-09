@@ -4,7 +4,8 @@ import AllergenListSimple from './AllergenList'
 class AllergenForm extends Component {
   state = {
     value: "",
-    allAllergens: null
+    allAllergens: null,
+    buttonDisabled: true
   }
 
   componentWillMount(){
@@ -13,8 +14,30 @@ class AllergenForm extends Component {
 
   onNameChanged(e){
     let string = e.target.value
+
+    if((string.trim()).length > 2){
+      let {allAllergens : allergens } = this.state
+      for(let i = 0; i < allergens.length; i++){
+        if(string.toLowerCase() === allergens[i].name.toLowerCase()){
+          this.setButtonDisabled(true)
+        } else {
+          this.setButtonDisabled(false)
+        }
+      }
+    } else {
+      if(!this.state.buttonDisabled){
+        this.setButtonDisabled(true)
+      }
+    }
+
     this.setState({
       value: string
+    })
+  }
+
+  setButtonDisabled(bool){
+    this.setState({
+      buttonDisabled: bool
     })
   }
 
@@ -47,6 +70,7 @@ class AllergenForm extends Component {
   onFormSubmit(e){
     e.preventDefault();
     e.stopPropagation();
+
     console.log("Submitting a form!");
     let data = JSON.stringify({ "name": this.state.value });
     let url = 'http://192.168.0.5:8000/api/allergen';
@@ -79,7 +103,7 @@ class AllergenForm extends Component {
   }
 
   render(){
-    let {allAllergens} = this.state
+    let {allAllergens, buttonDisabled} = this.state
     return (
       <div className="allergen-form">
         <h2>Current Allergens</h2>
@@ -91,7 +115,7 @@ class AllergenForm extends Component {
             Allergen:
             <input type="text" value={this.state.value} onChange={(e) => this.onNameChanged(e)} />
           </label>
-          <button type="submit">Submit</button>
+          <button type="submit" disabled={buttonDisabled}>Submit</button>
         </form>
       </div>)
   }

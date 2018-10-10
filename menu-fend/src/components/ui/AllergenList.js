@@ -8,13 +8,13 @@ class AllergenListSimple extends Component {
   render(){
     let {allAllergens, config, onDelete} = this.props
     return (
-      <div className="allergen-list-simple" >{allAllergens ?
+      <div className="allergen-list-simple" style={{display: "flex", background: "#ddd", flexWrap: "wrap", flexDirection: "row", justifyContent: "flex-start"}}>{allAllergens ?
       allAllergens.map(allergen => (
-        <span key={allergen._id}>
+        <div key={allergen._id} style={{background: "white", borderRadius: 20, margin: 4, padding: 8}}>
           {allergen.name}{config.canDelete && (<div style={
-            {display: "inline", background: "#ccc", marginLeft: 4, borderRadius: "50%", minWidth: 16}}
+            {display: "inline", background: "#ccc", marginLeft: 4, borderRadius: "50%", padding: 4, textAlign: "center"}}
             className="allergen-remove-x"
-            onClick={(e) => onDelete(e, allergen)}>x</div>)}</span>))
+            onClick={(e) => onDelete(e, allergen)}>x</div>)}</div>))
         : <span>No Allergens found</span>}</div>
     )
   }

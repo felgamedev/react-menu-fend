@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import AllergenListSimple from './AllergenList'
 
+var baseUrl = "http://192.168.0.5:8000/api/"
+
 class AllergenForm extends Component {
   state = {
     value: "",
@@ -42,16 +44,14 @@ class AllergenForm extends Component {
   }
 
   onAllergenRemoved(e, allergenIn){
-    console.log(allergenIn.name);
     let allergensList = this.state.allAllergens.filter(allergen => allergen._id !== allergenIn._id);
-    console.log(allergensList);
     this.setState({
       allAllergens: allergensList
     })
   }
 
   getAllAllergens(){
-    fetch('http://192.168.0.5:8000/api/allergen',
+    fetch(baseUrl + 'allergen',
     { mode: "cors", headers: {"Content-type" : "application/json"}}
     )
     .then(response => response.json())
@@ -73,12 +73,11 @@ class AllergenForm extends Component {
 
     console.log("Submitting a form!");
     let data = JSON.stringify({ "name": this.state.value });
-    let url = 'http://192.168.0.5:8000/api/allergen';
 
     // TODO Add some kind of form validation here, perhaps locally with available names?
 
     // Add the new allergen to the online database
-    fetch(url, {
+    fetch(baseUrl + 'allergen', {
       method: "POST",
       mode: "cors",
       body: data,
@@ -99,7 +98,20 @@ class AllergenForm extends Component {
 
   onDeleteAllergen(event, allergen){
     console.log("Delete! Kapow! " + allergen.name)
+    console.log(baseUrl + "allergen/" + allergen._id);
+
+    fetch(baseUrl + "allergen/" + allergen._id, {
+      method: "DELETE",
+      mode: "cors",
+      body: null,
+      headers: {
+        "Content-Type": "text/plain"
+      }
+    })
+    .then(res => res.json())
+    .then(data => console.log(data));
     // TODO implement delete when API is ready :)
+    this.getAllAllergens()
   }
 
   render(){
@@ -107,7 +119,7 @@ class AllergenForm extends Component {
     return (
       <div className="allergen-form">
         <h2>Current Allergens</h2>
-        <AllergenListSimple allAllergens={allAllergens} config={{canDelete: true, canEdit: false}} onDelete={this.onDeleteAllergen}/>
+        <AllergenListSimple allAllergens={allAllergens} config={{canDelete: true, canEdit: false}} onDeleteAllergen={this.onDeleteAllergen.bind(this)}/>
         <h2>Add new Allergen</h2>
         <p>Create a new allergen. The name must be unique</p>
         <form onSubmit={(e) => this.onFormSubmit(e)}>

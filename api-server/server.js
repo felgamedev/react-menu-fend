@@ -64,7 +64,21 @@ router.route('/allergen')
       if(err) res.send(err)
       res.json(allergens)
     })
-  });
+  })
+
+router.route('/allergen/:id')
+  .delete((req, res) => {
+    Allergen.deleteOne({_id:req.params.id}, (err) => {
+      if(err) res.send(err)
+      res.json({message: "AllergenDeleted"})
+    })
+  })
+  .get((req, res) => {
+    Allergen.find({_id: req.params.id}, (err, allergen) =>{
+      if(err) res.send(err)
+      res.json(allergen)
+    })
+  })
 
 router.route('/ingredients')
   .post((req, res) => {

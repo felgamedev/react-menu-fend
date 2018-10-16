@@ -10,6 +10,9 @@ const Allergen = require('./app/models/allergen')
 const Ingredient = require('./app/models/ingredient')
 const FoodComponent = require('./app/models/foodcomponent')
 
+// Routers
+const AllergenRouter = require('./app/routes/allergen')
+
 // Define a port to listen on for local testing
 const PORT = 8000
 
@@ -21,8 +24,12 @@ app.use(bodyParser.json())
 mongoose.connect(dbConfig.dbUrl)
 
 // Set up router and default url extender
+const urlPrefix = "/api/v1"
 const router = express.Router();
 app.use('/api', router)
+
+// API endpoints
+app.use(urlPrefix, AllergenRouter)
 
 // Middleware for extra processing
 router.use((req, res, next) => {
@@ -48,38 +55,7 @@ router.route('/tests')
     })
   });
 
-router.route('/allergen')
-  .post((req, res) => {
-    var allergen = new Allergen()
-    console.log(req.body);
-    allergen.name = req.body.name
-
-    allergen.save((err) => {
-      if(err) res.send(err)
-      res.json({ "message": "Added allergen" });
-    })
-  })
-  .get((req, res) => {
-    Allergen.find((err, allergens) => {
-      if(err) res.send(err)
-      res.json(allergens)
-    })
-  })
-
-router.route('/allergen/:id')
-  .delete((req, res) => {
-    Allergen.deleteOne({_id:req.params.id}, (err) => {
-      if(err) res.send(err)
-      res.json({message: "AllergenDeleted"})
-    })
-  })
-  .get((req, res) => {
-    Allergen.find({_id: req.params.id}, (err, allergen) =>{
-      if(err) res.send(err)
-      res.json(allergen)
-    })
-  })
-
+// Route for general Ingredient calls, get all and add new
 router.route('/ingredients')
   .post((req, res) => {
     var ingredient = new Ingredient()
@@ -101,6 +77,7 @@ router.route('/ingredients')
     })
   });
 
+// Route for general FoodComponent calls, get all and add new
 router.route('/foodcomponent')
   .post((req, res) => {
     var foodComponent = new FoodComponent()

@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const app = express()
 const dbConfig = require('./dbconfig')
 
@@ -20,6 +21,9 @@ const PORT = 8000
 app.use(bodyParser.urlencoded({extended: true }))
 app.use(bodyParser.json())
 
+// Enable CORS
+app.use(cors())
+
 // connect to the remote DB
 mongoose.connect(dbConfig.dbUrl)
 
@@ -33,8 +37,7 @@ app.use(urlPrefix, AllergenRouter)
 
 // Middleware for extra processing
 router.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://192.168.0.5:3000")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
   console.log("Simulating some processing on " + req)
   next()
 })

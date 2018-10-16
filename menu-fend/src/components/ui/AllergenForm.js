@@ -112,7 +112,7 @@ class AllergenForm extends Component {
   render(){
     let {allAllergens, buttonDisabled} = this.state
     return (
-      <div className="allergen-form">
+      <div className={(allAllergens === null) ? "allergen-form-disabled" : "allergen-form"}>
         <h2>Current Allergens</h2>
         <AllergenListSimple allAllergens={allAllergens} config={{canDelete: true, canEdit: false}} onDeleteAllergen={this.onDeleteAllergen.bind(this)}/>
         <h2>Add new Allergen</h2>

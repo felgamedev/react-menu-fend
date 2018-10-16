@@ -16,16 +16,16 @@ class AllergenForm extends Component {
 
   onNameChanged(e){
     let string = e.target.value
-
+    let matchFound = false
     if((string.trim()).length > 2){
       let {allAllergens : allergens } = this.state
       for(let i = 0; i < allergens.length; i++){
-        if(string.toLowerCase() === allergens[i].name.toLowerCase()){
-          this.setButtonDisabled(true)
-        } else {
-          this.setButtonDisabled(false)
+        if(string.trim().toLowerCase() === allergens[i].name.toLowerCase()){
+          matchFound = true
+          break
         }
       }
+      this.setButtonDisabled(matchFound)
     } else {
       if(!this.state.buttonDisabled){
         this.setButtonDisabled(true)

@@ -120,7 +120,8 @@ class AllergenForm extends Component {
         <form onSubmit={(e) => this.onFormSubmit(e)}>
           <label>
             Allergen:
-            <input type="text" value={this.state.value} onChange={(e) => this.onNameChanged(e)} />
+            <input type="text" disabled={(allAllergens === null) ? true: false } value={this.state.value} onChange={(e) => this.onNameChanged(e)} />
+            {allAllergens === null && <p>Database server is offline, try refreshing the page</p>}
           </label>
           <button type="submit" disabled={buttonDisabled}>Submit</button>
         </form>

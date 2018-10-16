@@ -53,21 +53,8 @@ class App extends Component {
       user_lastName: "Hampton"
     }
 
-    // TODO switch from static to API data
-    let allergensRaw = ["Lactose", "Gluten", "Soy", "Shellfish", "Nuts"]
-    //let allergensRaw = getAllergerns()
-
-    let allergensList = []
-    for(let i = 0; i < allergensRaw.length; i++){
-      let allergen = new Allergen();
-      allergen.name = allergensRaw[i]
-      allergen.id = i
-      allergensList.push(allergen)
-    }
-
     this.setState({
-      user: userLoggedIn,
-      allergens: allergensList
+      user: userLoggedIn
     })
   }
 

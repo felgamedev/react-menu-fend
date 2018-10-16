@@ -30,7 +30,7 @@ mongoose.connect(dbConfig.dbUrl)
 // Set up router and default url extender
 const urlPrefix = "/api/v1"
 const router = express.Router();
-app.use('/api', router)
+app.use(urlPrefix, router)
 
 // API endpoints
 app.use(urlPrefix, AllergenRouter)
@@ -59,7 +59,7 @@ router.route('/tests')
   });
 
 // Route for general Ingredient calls, get all and add new
-router.route('/ingredients')
+router.route('/ingredient')
   .post((req, res) => {
     var ingredient = new Ingredient()
     ingredient.name = req.body.name

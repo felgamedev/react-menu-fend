@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AllergenListSimple from './AllergenList'
 
-var baseUrl = "http://192.168.0.5:8000/api/"
+var baseUrl = "http://192.168.0.5:8000/api/v1/"
 
 class AllergenForm extends Component {
   state = {
@@ -56,7 +56,6 @@ class AllergenForm extends Component {
     )
     .then(response => response.json())
     .then(data => {
-      console.log("Loading data from API");
       this.setState({
         allAllergens: data
       })
@@ -70,8 +69,6 @@ class AllergenForm extends Component {
   onFormSubmit(e){
     e.preventDefault();
     e.stopPropagation();
-
-    console.log("Submitting a form!");
     let data = JSON.stringify({ "name": this.state.value });
 
     // TODO Add some kind of form validation here, perhaps locally with available names?
@@ -97,21 +94,19 @@ class AllergenForm extends Component {
   }
 
   onDeleteAllergen(event, allergen){
-    console.log("Delete! Kapow! " + allergen.name)
-    console.log(baseUrl + "allergen/" + allergen._id);
-
+    var self = this
     fetch(baseUrl + "allergen/" + allergen._id, {
       method: "DELETE",
-      mode: "cors",
       body: null,
       headers: {
         "Content-Type": "text/plain"
       }
     })
     .then(res => res.json())
-    .then(data => console.log(data));
-    // TODO implement delete when API is ready :)
-    this.getAllAllergens()
+    .then(data => {
+      console.log(data)
+      self.getAllAllergens()
+    });
   }
 
   render(){

@@ -65,7 +65,8 @@ class App extends Component {
         <Router>
           <div>
             <Link to="/"><div>Home</div></Link>
-            <Link to="/allergen"><div>Allergens Form</div></Link>
+            <Link to="/allergen"><div>Allergens</div></Link>
+            <Link to="/ingredient"><div>Ingredients</div></Link>
 
             <Route exact path="/" render={() => <Menu menu={this.state.menu[0]}/>} />
             <Route exact path="/allergen" render={() => <AllergenForm />} />

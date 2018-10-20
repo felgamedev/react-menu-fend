@@ -69,7 +69,7 @@ router.route('/ingredient')
 
     ingredient.save((err) => {
       if(err) res.send(err)
-      res.json({ message: "Ingredient added successfully!"})
+      res.json(ingredient)
     })
 
   })

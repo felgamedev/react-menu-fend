@@ -8,7 +8,6 @@ class IngredientForm extends Component {
     alternativeNameValue: '',
     brandNameValue: '',
     allIngredients: null,
-    formSubmitDisabled: false,
     nameMatchFound: false,
     brandNameMatchFound: false,
     alternativeNameMatchFound: false
@@ -22,77 +21,63 @@ class IngredientForm extends Component {
     .then(data => this.setState({ allIngredients: data }))
   }
 
-  validateString(string){
-    return ""
-  }
-
-  setButtonDisabled(boolean){
-    this.setState({
-      formSubmitDisabled: boolean
-    })
-  }
-
   onNameChanged(e){
     let string = e.target.value
-    let { allIngredients, nameMatchFound } = this.state
-    let matchFound = false
+
+    this.checkForMatches(string, this.state.brandNameValue, null)
 
     // Store the value in state
     this.setState({
       nameValue: string
     })
-
-    // Check for match
-    for(let i = 0; i < allIngredients.length; i++){
-      if(string.trim().toLowerCase() === allIngredients[i].name.toLowerCase()){
-        matchFound = true
-      }
-    }
-
-    // Set the state for button state
-    if(matchFound !== nameMatchFound){
-      this.setState({
-        nameMatchFound: matchFound
-      })
-    }
   }
 
+  // Not sure if this will be used yet!
   onAlternativeNameChanged(e){
     let string = e.target.name
+
+    this.checkForMatches(null, null, string)
 
     this.setState({
       alternativeNameValue: string
     })
+
   }
 
   onBrandNameChanged(e){
     let string = e.target.value
-    let { allIngredients, brandNameMatchFound } = this.state
     let matchFound = false
 
     this.setState({
       brandNameValue: string
     })
+    this.checkForMatches(this.state.nameValue, string, null)
+  }
 
+  checkForMatches(name, bname, aname){
+    let { allIngredients, nameMatchFound, brandNameMatchFound, alternativeNameMatchFound } = this.state
+    let nm = false, bnm = false, anm = false
+    debugger
     // Check for match
     for(let i = 0; i < allIngredients.length; i++){
-      if(string.trim().toLowerCase() === allIngredients[i].brandName.toLowerCase()){
-        matchFound = true
+      console.log(name && (name.trim().toLowerCase() === allIngredients[i].name.toLowerCase()));
+      if(name !== null && name.trim().toLowerCase() === allIngredients[i].name.trim().toLowerCase()){
+        nm = true
+        console.log("Checking name");
       }
+
+      if(bname !== null && bname.trim().toLowerCase() === allIngredients[i].brandName.toLowerCase()) bnm = true
     }
 
     // Set the state for button state
-    if(matchFound !== brandNameMatchFound){
-      this.setState({
-        brandNameMatchFound: matchFound
-      })
-    }
+    if(nm !== nameMatchFound) this.setState({ nameMatchFound: nm })
+    if(bnm !== brandNameMatchFound) this.setState({ brandNameMatchFound: bnm })
 
   }
 
   onSubmitForm(e){
     e.preventDefault()
-    let { nameValue: name, brandNameValue: brandName, alternativeNameValue: alternativeName } = this.state
+    let { nameValue: name, brandNameValue: brandName, alternativeNameValue: alternativeName, allIngredients } = this.state
     let data = JSON.stringify({ name: name, brandName: brandName, alternativeName: alternativeName})
 
     fetch(baseUrl + "ingredient", {
@@ -102,11 +87,20 @@ class IngredientForm extends Component {
       headers: { "Content-Type" : "application/json"}
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {
+      allIngredients.push(data)
+      this.setState({
+        allIngredients,
+        nameValue: '',
+        alternativeNameValue: '',
+        brandNameValue: '',
+        formSubmitDisabled: false
+      })
+    })
   }
 
   render(){
-    let { allIngredients, nameValue, alternativeNameValue, brandNameValue, formSubmitDisabled,
+    let { allIngredients, nameValue, alternativeNameValue, brandNameValue,
       nameMatchFound, brandNameMatchFound, alternativeNameMatchFound } = this.state
     return(
       <div className={(allIngredients === null) ? "ingredient-form-disabled" : "ingredient-form"}>
@@ -132,7 +126,7 @@ class IngredientForm extends Component {
 
 
         <h3>Temporary Ingredient List</h3>
-        {allIngredients && allIngredients.map(ingredient => (<div key={ingredient._id}>{ingredient.name} - <span style={{fontStyle: "italic"}}>{ingredient.brandName}</span></div>))}
+        {allIngredients && allIngredients.map(ingredient => <div key={ingredient._id}>{ingredient.name}{ingredient.brandName && " - "}{ingredient.brandName && (<span>{ingredient.brandName}</span>)}</div>)}
         <h3>Ingredient Inspector</h3>
 
 

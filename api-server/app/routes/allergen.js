@@ -25,12 +25,18 @@ router.route(prefix + '/')
   })
 
 router.route(prefix + "/:id")
-  // UPDATE
+  // READ a single record
+  .get((req, res) => {
+    Allergen.find({_id: req.params.id}, (err, allergen) =>{
+      if(err) res.send(err)
+      res.json(allergen)
+    })
+  })
+  // UPDATE a single record
   .put((req, res) => {
-    console.log("Put request");
     Allergen.findById(req.params.id, (err, allergen) => {
       if(err) res.send(err)
-      allergen.name = req.body.name
+      allergen.name = req.body.name ? req.body.name : allergen.name
       allergen.save((err, updatedObject) => {
         if(err) res.send(err)
         res.json(updatedObject)
@@ -42,13 +48,6 @@ router.route(prefix + "/:id")
     Allergen.deleteOne({_id:req.params.id}, (err) => {
       if(err) res.send(err)
       res.json({message: "AllergenDeleted"})
-    })
-  })
-  // READ a single record
-  .get((req, res) => {
-    Allergen.find({_id: req.params.id}, (err, allergen) =>{
-      if(err) res.send(err)
-      res.json(allergen)
     })
   })
 

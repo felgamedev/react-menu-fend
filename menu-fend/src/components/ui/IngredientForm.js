@@ -5,12 +5,10 @@ var baseUrl = "http://192.168.0.5:8000/api/v1/"
 class IngredientForm extends Component {
   state = {
     nameValue: '',
-    alternativeNameValue: '',
     brandNameValue: '',
     allIngredients: null,
     nameMatchFound: false,
     brandNameMatchFound: false,
-    alternativeNameMatchFound: false
   }
 
   componentWillMount(){
@@ -32,18 +30,6 @@ class IngredientForm extends Component {
     })
   }
 
-  // Not sure if this will be used yet!
-  onAlternativeNameChanged(e){
-    let string = e.target.name
-
-    this.checkForMatches(null, null, string)
-
-    this.setState({
-      alternativeNameValue: string
-    })
-
-  }
-
   onBrandNameChanged(e){
     let string = e.target.value
     let matchFound = false
@@ -55,7 +41,7 @@ class IngredientForm extends Component {
   }
 
   checkForMatches(name, bname, aname){
-    let { allIngredients, nameMatchFound, brandNameMatchFound, alternativeNameMatchFound } = this.state
+    let { allIngredients, nameMatchFound, brandNameMatchFound } = this.state
     let nm = false, bnm = false, anm = false
     debugger
     // Check for match
@@ -77,8 +63,8 @@ class IngredientForm extends Component {
 
   onSubmitForm(e){
     e.preventDefault()
-    let { nameValue: name, brandNameValue: brandName, alternativeNameValue: alternativeName, allIngredients } = this.state
-    let data = JSON.stringify({ name: name, brandName: brandName, alternativeName: alternativeName})
+    let { nameValue: name, brandNameValue: brandName, allIngredients } = this.state
+    let data = JSON.stringify({ name: name, brandName: brandName})
 
     fetch(baseUrl + "ingredient", {
       method: "POST",
@@ -92,7 +78,6 @@ class IngredientForm extends Component {
       this.setState({
         allIngredients,
         nameValue: '',
-        alternativeNameValue: '',
         brandNameValue: '',
         formSubmitDisabled: false
       })
@@ -100,8 +85,8 @@ class IngredientForm extends Component {
   }
 
   render(){
-    let { allIngredients, nameValue, alternativeNameValue, brandNameValue,
-      nameMatchFound, brandNameMatchFound, alternativeNameMatchFound } = this.state
+    let { allIngredients, nameValue, brandNameValue,
+      nameMatchFound, brandNameMatchFound } = this.state
     return(
       <div className={(allIngredients === null) ? "ingredient-form-disabled" : "ingredient-form"}>
         <h2>Ingredients</h2>
@@ -115,10 +100,6 @@ class IngredientForm extends Component {
           <label>
             <p>Brand Name:
             <input type="text" value={brandNameValue} onChange={(e) => this.onBrandNameChanged(e)} disabled={!String(nameValue).length > 0} hint="Enter brand ame if applicable" /></p>
-          </label>
-          <label>
-            <p>Alternative name:
-            <input type="text" value={alternativeNameValue} onChange={(e) => this.onAlternativeNameChanged(e)} disabled={!String(nameValue).length > 0} hint="Enter alternative name here" /></p>
           </label>
 
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>

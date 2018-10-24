@@ -7,12 +7,10 @@ const dbConfig = require('./dbconfig')
 
 // Models
 const Test = require('./app/models/test')
-const Allergen = require('./app/models/allergen')
-const Ingredient = require('./app/models/ingredient')
-const FoodComponent = require('./app/models/foodcomponent')
 
 // Routers
 const AllergenRouter = require('./app/routes/allergen')
+const IngredientRouter = require('./app/routes/ingredient')
 
 // Define a port to listen on for local testing
 const PORT = 8000
@@ -34,10 +32,10 @@ app.use(urlPrefix, router)
 
 // API endpoints
 app.use(urlPrefix, AllergenRouter)
+app.use(urlPrefix, IngredientRouter)
 
 // Middleware for extra processing
 router.use((req, res, next) => {
-
   console.log("Simulating some processing on " + req)
   next()
 })
@@ -55,28 +53,6 @@ router.route('/tests')
     test.save((err) => {
       if(err) res.send(err)
       res.json({ message: "Test successfully added "})
-    })
-  });
-
-// Route for general Ingredient calls, get all and add new
-router.route('/ingredient')
-  .post((req, res) => {
-    var ingredient = new Ingredient()
-    ingredient.name = req.body.name
-    ingredient.alternativeName = req.body.alternativeName
-    ingredient.brandName = req.body.brandName
-    ingredient.allergens = req.body.allergens
-
-    ingredient.save((err) => {
-      if(err) res.send(err)
-      res.json(ingredient)
-    })
-
-  })
-  .get((req, res) => {
-    Ingredient.find((err, ingredients) => {
-      if(err) res.send(err)
-      res.json(ingredients)
     })
   });
 

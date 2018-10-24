@@ -3,7 +3,6 @@ const Schema = mongoose.Schema
 
 const IngredientSchema = {
   name: String,
-  alternativeName: String,
   brandName: String,
   allergens: [String]
 }

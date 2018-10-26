@@ -9,6 +9,7 @@ class IngredientForm extends Component {
     allIngredients: null,
     nameMatchFound: false,
     brandNameMatchFound: false,
+    allAllergens: []
   }
 
   componentWillMount(){
@@ -17,6 +18,16 @@ class IngredientForm extends Component {
     })
     .then(response => response.json())
     .then(data => this.setState({ allIngredients: data }))
+
+    fetch(baseUrl + 'allergen', {
+      mode: "cors", headers: { "Content-Type": "application/json"}
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Add a selected flag for each allergen for use in the form
+      data.forEach(data => data.selected = false)
+      this.setState({ allAllergens: data })
+    })
   }
 
   onNameChanged(e){
@@ -40,10 +51,23 @@ class IngredientForm extends Component {
     this.checkForMatches(this.state.nameValue, string, null)
   }
 
+  onAllergenSelectionChanged(e){
+    let selectedAllergen = e.target.value
+    let allergens = this.state.allAllergens
+
+    allergens.forEach(allergen => {
+      allergen.selected = (allergen._id === selectedAllergen) ? !allergen.selected : allergen.selected
+      console.log(allergen._id + " " + selectedAllergen);
+    })
+
+    this.setState({
+      allAllergens: allergens
+    })
+  }
+
   checkForMatches(name, bname, aname){
     let { allIngredients, nameMatchFound, brandNameMatchFound } = this.state
     let nm = false, bnm = false, anm = false
-    debugger
     // Check for match
     for(let i = 0; i < allIngredients.length; i++){
       console.log(name && (name.trim().toLowerCase() === allIngredients[i].name.toLowerCase()));
@@ -63,8 +87,14 @@ class IngredientForm extends Component {
 
   onSubmitForm(e){
     e.preventDefault()
-    let { nameValue: name, brandNameValue: brandName, allIngredients } = this.state
-    let data = JSON.stringify({ name: name, brandName: brandName})
+    let { nameValue: name, brandNameValue: brandName, allIngredients, allAllergens } = this.state
+
+    let allergensArray = []
+    allAllergens.forEach(allergen => {
+      if(allergen.selected) allergensArray.push(allergen._id)
+    })
+
+    let data = JSON.stringify({ name: name, brandName: brandName, allergens: allergensArray })
 
     fetch(baseUrl + "ingredient", {
       method: "POST",
@@ -86,7 +116,12 @@ class IngredientForm extends Component {
 
   render(){
     let { allIngredients, nameValue, brandNameValue,
-      nameMatchFound, brandNameMatchFound } = this.state
+      nameMatchFound, brandNameMatchFound, allAllergens } = this.state
+
+    let selectedAllergens = []
+    allAllergens.forEach(allergen => {
+      if(allergen.selected) selectedAllergens.push("" + allergen._id)
+    })
     return(
       <div className={(allIngredients === null) ? "ingredient-form-disabled" : "ingredient-form"}>
         <h2>Ingredients</h2>
@@ -100,6 +135,12 @@ class IngredientForm extends Component {
           <label>
             <p>Brand Name:
             <input type="text" value={brandNameValue} onChange={(e) => this.onBrandNameChanged(e)} disabled={!String(nameValue).length > 0} hint="Enter brand ame if applicable" /></p>
+          </label>
+          <label>
+            <p>Allergens:</p>
+            <select readOnly={true} onClick={(e) => this.onAllergenSelectionChanged(e)} multiple={true} value={selectedAllergens}>
+              {allAllergens && allAllergens.map(allergen => (<option key={allergen._id} value={allergen._id}>{allergen.name}</option>))}
+            </select>
           </label>
 
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>

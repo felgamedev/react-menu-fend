@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-var baseUrl = "http://192.168.0.5:8000/api/v1/"
+var baseUrl = "http://localhost:8000/api/v1/"
 
 class IngredientForm extends Component {
   state = {

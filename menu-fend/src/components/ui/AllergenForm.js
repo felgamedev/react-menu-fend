@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import AllergenListSimple from './AllergenList'
 
-var baseUrl = "http://192.168.0.5:8000/api/v1/"
+var baseUrl = "http://localhost:8000/api/v1/"
 
 class AllergenForm extends Component {
   state = {

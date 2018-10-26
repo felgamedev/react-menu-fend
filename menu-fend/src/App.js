@@ -9,6 +9,7 @@ import './App.css';
 
 class App extends Component {
   state = {
+    auth2: null,
     allergens: [],
     user: {},
     menu: [{
@@ -42,25 +43,63 @@ class App extends Component {
   }
 
   componentWillMount(){
-
   }
 
   componentDidMount(){
-    // TODO Get the user logged in
-    let userLoggedIn = {
-      uid: 1987,
-      user_firstName: "Scott",
-      user_lastName: "Hampton"
-    }
+    this.runGoogleLoginInit()
+  }
 
-    this.setState({
-      user: userLoggedIn
+  runGoogleLoginInit(){
+    const gapi = window.gapi
+    gapi.load("auth2", () => {
+      console.log("Loading auth2");
+      const auth2 = gapi.auth2.init({
+        clientId: "23127013757-6qei2k33fp0v6svtol5hv7lpsaekfqhs.apps.googleusercontent.com"
+      });
+
+      auth2.isSignedIn.listen(status => {
+        console.log(status)
+      })
+
+
+      auth2.currentUser.listen(user => {
+        const profile = user.getBasicProfile()
+
+        if(profile){
+          var userLoggedIn = {
+            user_firstName: profile.getGivenName(),
+            user_lastName: profile.getFamilyName(),
+            uid: profile.getId()
+          }
+
+          this.setState({
+            user: userLoggedIn
+          })
+        }
+
+      })
+
+      this.setState({
+        auth2
+      })
     })
+
+
+  }
+
+  onClickLogin(){
+    this.state.auth2.signIn()
+  }
+
+  onClickLogout(){
+    this.state.auth2.signOut()
   }
 
   render() {
     return (
       <div className="App">
+        <button onClick={(e) => this.onClickLogin(e)} id="login">Login</button>
+        <button onClick={(e) => this.state.auth2.signOut()}>Logout</button>
         <Header user={this.state.user}/>
         <Router>
           <div>

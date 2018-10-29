@@ -11,6 +11,7 @@ const Test = require('./app/models/test')
 // Routers
 const AllergenRouter = require('./app/routes/allergen')
 const IngredientRouter = require('./app/routes/ingredient')
+const UserRouter = require('./app/routes/user')
 
 // Define a port to listen on for local testing
 const PORT = 8000
@@ -33,6 +34,7 @@ app.use(urlPrefix, router)
 // API endpoints
 app.use(urlPrefix, AllergenRouter)
 app.use(urlPrefix, IngredientRouter)
+app.use(urlPrefix, UserRouter)
 
 // Middleware for extra processing
 router.use((req, res, next) => {

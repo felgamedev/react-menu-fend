@@ -13,7 +13,7 @@ class App extends Component {
   state = {
     auth2: null,
     allergens: [],
-    user: {},
+    user: null,
     menu: [{
       title: "Regular Menu",
       submenus: [

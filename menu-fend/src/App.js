@@ -69,16 +69,8 @@ class App extends Component {
 
         // If the user is logged in
         if(profile){
-          // Retrieve their basic info
-          var userLoggedIn = {
-            user_firstName: profile.getGivenName(),
-            user_lastName: profile.getFamilyName(),
-            googleId: profile.getId(),
-            userId: null
-          }
-
           var self = this
-          fetch(baseUrl + 'user/' + userLoggedIn.googleId, {
+          fetch(baseUrl + 'user/' + profile.getId(), {
             mode: 'cors', headers: {'Content-Type': 'application/json'}
           })
           .then(response => response.json())
@@ -91,30 +83,23 @@ class App extends Component {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                  firstName: userLoggedIn.user_firstName,
-                  lastName: userLoggedIn.user_lastName,
-                  googleId: userLoggedIn.googleId
+                  firstName: profile.getGivenName(),
+                  lastName: profile.getFamilyName(),
+                  googleId: profile.getId()
                 })
               })
               .then(response => response.json())
               .then(data => {
                 console.log("User created:" , data);
-                userLoggedIn.userId = data._id
                 self.setState({
-                  user: userLoggedIn
+                  user: data
                 })
               })
             } else {
-              // User found!
-              userLoggedIn.userId = data._id
-              self.setState({ user: userLoggedIn})
+              self.setState({ user: data })
             }
           })
         }
-        //
-        self.setState({
-          user: userLoggedIn
-        })
       })
 
       this.setState({
@@ -131,6 +116,7 @@ class App extends Component {
 
   onClickLogout(){
     this.state.auth2.signOut()
+    .then(() => this.setState({user: null}))
   }
 
   render() {

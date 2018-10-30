@@ -25,6 +25,7 @@ router.route(prefix + '/')
     })
   });
 
+// USERLESS route
 router.route(prefix + '/:id')
   // READ a single record
   .get((req, res) => {
@@ -52,6 +53,37 @@ router.route(prefix + '/:id')
       if(err) res.send(err)
       res.json({message: "Ingredient Deleted"})
     })
+  });
+
+// USER based route
+router.route(prefix + '/u/:id')
+  // READ a single record
+  .get((req, res) => {
+    Ingredient.find({userId: req.params.id}, (err, ingredients) => {
+      if(err) res.send(err)
+      res.json(ingredients)
+    })
   })
+  // UPDATE a single record
+  .put((req, res) => {
+    Ingredient.findById(req.params.id, (err, ingredient) => {
+      if(err) res.send(err)
+      ingredient.name = req.body.name ? req.body.name : ingredient.name
+      ingredient.brandName = req.body.brandName ? req.body.brandName : ingredient.brandName
+      ingredient.allergens = req.body.allergens ? req.body.allergens : ingredient.allergens
+
+      ingredient.save((err, updatedObject) => {
+        if(err) res.send(err)
+        res.json(updatedObject)
+      })
+    })
+  })
+  .delete((req, res) => {
+    Ingredient.deleteOne({_id:req.params.id}, (err)=>{
+      if(err) res.send(err)
+      res.json({message: "Ingredient Deleted"})
+    })
+  })
+
 
 module.exports = router

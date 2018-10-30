@@ -7,12 +7,24 @@ class IngredientForm extends Component {
     nameValue: '',
     brandNameValue: '',
     allIngredients: null,
+    usersIngredients: null,
     nameMatchFound: false,
     brandNameMatchFound: false,
     allAllergens: []
   }
 
   componentWillMount(){
+    // TODO if user is logged in, retrieve the list of ingredients they have added
+    if(this.props.user !== null){
+      console.log("USer logged in, retrieving their ingredients");
+      // Use the /u prefix to specify new route to handle find by user id
+      fetch(baseUrl + 'ingredient/u/' + this.props.user._id, {
+        mode: "cors", headers: { "Content-type": "application/json"}
+      })
+      .then(response => response.json())
+      .then(data => this.setState({usersIngredients: data}))
+    }
+
     fetch(baseUrl + 'ingredient', {
       mode: "cors", headers: { "Content-type": "application/json"}
     })

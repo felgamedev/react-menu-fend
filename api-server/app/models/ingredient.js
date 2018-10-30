@@ -4,7 +4,8 @@ const Schema = mongoose.Schema
 const IngredientSchema = {
   name: String,
   brandName: String,
-  allergens: [String]
+  allergens: [String],
+  userId: String
 }
 
 module.exports = mongoose.model('Ingredient', IngredientSchema)

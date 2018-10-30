@@ -7,6 +7,8 @@ import IngredientForm from './components/ui/IngredientForm'
 import Allergen from './objects/Allergen'
 import './App.css';
 
+var baseUrl = "http://localhost:8000/api/v1/"
+
 class App extends Component {
   state = {
     auth2: null,
@@ -65,18 +67,54 @@ class App extends Component {
       auth2.currentUser.listen(user => {
         const profile = user.getBasicProfile()
 
+        // If the user is logged in
         if(profile){
+          // Retrieve their basic info
           var userLoggedIn = {
             user_firstName: profile.getGivenName(),
             user_lastName: profile.getFamilyName(),
-            uid: profile.getId()
+            googleId: profile.getId(),
+            userId: null
           }
 
-          this.setState({
-            user: userLoggedIn
+          var self = this
+          fetch(baseUrl + 'user/' + userLoggedIn.googleId, {
+            mode: 'cors', headers: {'Content-Type': 'application/json'}
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log("User info retrieved: ", data);
+            // create user if failed to retrieve one
+            if(!data){
+              console.log("User doesnt exist!");
+              fetch(baseUrl + 'user/', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                  firstName: userLoggedIn.user_firstName,
+                  lastName: userLoggedIn.user_lastName,
+                  googleId: userLoggedIn.googleId
+                })
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log("User created:" , data);
+                userLoggedIn.userId = data._id
+                self.setState({
+                  user: userLoggedIn
+                })
+              })
+            } else {
+              // User found!
+              userLoggedIn.userId = data._id
+              self.setState({ user: userLoggedIn})
+            }
           })
         }
-
+        //
+        self.setState({
+          user: userLoggedIn
+        })
       })
 
       this.setState({

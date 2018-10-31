@@ -25,12 +25,14 @@ class IngredientForm extends Component {
       .then(data => this.setState({usersIngredients: data}))
     }
 
+    // Retrieve all ingredients
     fetch(baseUrl + 'ingredient', {
       mode: "cors", headers: { "Content-type": "application/json"}
     })
     .then(response => response.json())
     .then(data => this.setState({ allIngredients: data }))
 
+    // Retrieve all allergens
     fetch(baseUrl + 'allergen', {
       mode: "cors", headers: { "Content-Type": "application/json"}
     })
@@ -55,7 +57,6 @@ class IngredientForm extends Component {
 
   onBrandNameChanged(e){
     let string = e.target.value
-    let matchFound = false
 
     this.setState({
       brandNameValue: string
@@ -69,7 +70,6 @@ class IngredientForm extends Component {
 
     allergens.forEach(allergen => {
       allergen.selected = (allergen._id === selectedAllergen) ? !allergen.selected : allergen.selected
-      console.log(allergen._id + " " + selectedAllergen);
     })
 
     this.setState({
@@ -77,9 +77,9 @@ class IngredientForm extends Component {
     })
   }
 
-  checkForMatches(name, bname, aname){
+  checkForMatches(name, bname){
     let { allIngredients, nameMatchFound, brandNameMatchFound } = this.state
-    let nm = false, bnm = false, anm = false
+    let nm = false, bnm = false
     // Check for match
     for(let i = 0; i < allIngredients.length; i++){
       console.log(name && (name.trim().toLowerCase() === allIngredients[i].name.toLowerCase()));

@@ -6,8 +6,11 @@ var baseUrl = "http://localhost:8000/api/v1/"
 class AllergenForm extends Component {
   state = {
     value: "",
+    acronymValue: "",
     allAllergens: null,
-    buttonDisabled: true
+    allAcronyms: null,
+    buttonDisabled: true,
+    uniqueAcronym: true
   }
 
   componentWillMount(){
@@ -37,6 +40,25 @@ class AllergenForm extends Component {
     })
   }
 
+  onAcronymChanged(e){
+    let string = e.target.value
+    const { allAcronyms } = this.state
+    let uniqueAcronym = true
+
+    for(let i = 0; i < allAcronyms.length; i++){
+      if(string.trim().toLowerCase() === allAcronyms[i].toLowerCase()) {
+        console.log("Matching Acronym found");
+        uniqueAcronym = false
+        break
+      }
+    }
+
+    this.setState({
+      acronymValue: string.trim(),
+      uniqueAcronym
+    })
+  }
+
   setButtonDisabled(bool){
     this.setState({
       buttonDisabled: bool
@@ -57,22 +79,20 @@ class AllergenForm extends Component {
     .then(response => response.json())
     .then(data => {
       this.setState({
-        allAllergens: data
+        allAllergens: data,
+        allAcronyms: data.map(allergen => allergen.acronym)
       })
-    })
-
-    this.setState({
-      userAllergens: this.props.userAllergens
     })
   }
 
   onFormSubmit(e){
     e.preventDefault();
     e.stopPropagation();
-    let data = JSON.stringify({ "name": this.state.value });
+    let data = JSON.stringify({ "name": this.state.value, "acronym": this.state.acronymValue });
 
     // TODO Add some kind of form validation here, perhaps locally with available names?
 
+    let self = this
     // Add the new allergen to the online database
     fetch(baseUrl + 'allergen', {
       method: "POST",
@@ -83,14 +103,17 @@ class AllergenForm extends Component {
       }
     })
     .then(res => res.json())
-    .then(data => console.log(data));
+    .then(data => {
+      self.getAllAllergens()
+    });
 
     // Clear the form value
     this.setState({
-      value: ""
+      value: "",
+      acronymValue: "",
+      uniqueAcronym: true
     })
 
-    this.getAllAllergens()
   }
 
   onDeleteAllergen(event, allergen){
@@ -109,8 +132,12 @@ class AllergenForm extends Component {
     });
   }
 
+  isButtonDisabled(){
+    return this.state.buttonDisabled || !this.state.uniqueAcronym
+  }
+
   render(){
-    let {allAllergens, buttonDisabled} = this.state
+    let {allAllergens, buttonDisabled, uniqueAcronym} = this.state
     return (
       <div className={(allAllergens === null) ? "allergen-form-disabled" : "allergen-form"}>
         <h2>Current Allergens</h2>
@@ -119,11 +146,15 @@ class AllergenForm extends Component {
         <p>Create a new allergen. The name must be unique</p>
         <form onSubmit={(e) => this.onFormSubmit(e)}>
           <label>
-            Allergen:
+            <p>Allergen:</p>
             <input type="text" disabled={(allAllergens === null) ? true: false } value={this.state.value} onChange={(e) => this.onNameChanged(e)} />
             {allAllergens === null && <p>Database server is offline, try refreshing the page</p>}
           </label>
-          <button type="submit" disabled={buttonDisabled}>Submit</button>
+          <label>
+            <p>Acronym:</p>
+            <input type="text" disabled={(allAllergens === null) ? true : false} value={this.state.acronymValue} onChange={(e) => this.onAcronymChanged(e)} />
+          </label>
+          <button type="submit" disabled={this.isButtonDisabled()}>Submit</button>
         </form>
       </div>)
   }

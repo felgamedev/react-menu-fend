@@ -17,6 +17,7 @@ router.route(prefix + '/')
     var allergen = new Allergen()
     console.log(req.body);
     allergen.name = req.body.name
+    allergen.acronym = req.body.acronym
 
     allergen.save((err) => {
       if(err) res.send(err)

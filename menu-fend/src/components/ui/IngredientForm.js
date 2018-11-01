@@ -157,6 +157,8 @@ class IngredientForm extends Component {
       if(allergen.selected) selectedAllergens.push("" + allergen._id)
     })
 
+    if(allIngredients) allIngredients.sort((a, b) => (a.name.toUpperCase() === b.name.toUpperCase() ? 0 : (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1))
+
     //if(allIngredients) console.log(allergenMap.get(allIngredients[4].allergens[0].acronym));
     return(
       <div className={(allIngredients === null) ? "ingredient-form-disabled" : "ingredient-form"}>

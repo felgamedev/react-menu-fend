@@ -88,9 +88,9 @@ class IngredientForm extends Component {
     let selectedAllergen = e.target.value
     let allergens = this.state.allAllergens
 
-    allergens.forEach(allergen => {
-      allergen.selected = (allergen._id === selectedAllergen) ? !allergen.selected : allergen.selected
-    })
+    for(let i = 0; i < allergens.length; i++){
+      allergens[i].selected = (allergens[i]._id === selectedAllergen) ? !allergens[i].selected : allergens[i].selected
+    }
 
     this.setState({
       allAllergens: allergens
@@ -136,6 +136,9 @@ class IngredientForm extends Component {
     .then(response => response.json())
     .then(data => {
       allIngredients.push(data)
+      for(let i = 0; i < allAllergens.length; i++){
+        allAllergens[i].selected = false
+      }
       this.setState({
         allIngredients,
         nameValue: '',

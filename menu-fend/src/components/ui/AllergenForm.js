@@ -137,7 +137,7 @@ class AllergenForm extends Component {
   }
 
   render(){
-    let {allAllergens, buttonDisabled, uniqueAcronym} = this.state
+    let {allAllergens} = this.state
     return (
       <div className={(allAllergens === null) ? "allergen-form-disabled" : "allergen-form"}>
         <h2>Current Allergens</h2>

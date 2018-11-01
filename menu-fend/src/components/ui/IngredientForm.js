@@ -10,13 +10,14 @@ class IngredientForm extends Component {
     usersIngredients: null,
     nameMatchFound: false,
     brandNameMatchFound: false,
-    allAllergens: []
+    allAllergens: [],
+    allergenMap: null
   }
 
   componentWillMount(){
     // TODO if user is logged in, retrieve the list of ingredients they have added
     if(this.props.user !== null){
-      console.log("USer logged in, retrieving their ingredients");
+      console.log("User logged in, retrieving their ingredients");
       // Use the /u prefix to specify new route to handle find by user id
       fetch(baseUrl + 'ingredient/u/' + this.props.user._id, {
         mode: "cors", headers: { "Content-type": "application/json"}
@@ -25,22 +26,41 @@ class IngredientForm extends Component {
       .then(data => this.setState({usersIngredients: data}))
     }
 
-    // Retrieve all ingredients
+    var self = this
+    var ingredients = null
+    var allergens = null
+    var allergenMap = new Map()
+
+    // Retrieve all ingredients and allergens in a chain to create a map and save to state
     fetch(baseUrl + 'ingredient', {
       mode: "cors", headers: { "Content-type": "application/json"}
     })
     .then(response => response.json())
-    .then(data => this.setState({ allIngredients: data }))
-
-    // Retrieve all allergens
-    fetch(baseUrl + 'allergen', {
-      mode: "cors", headers: { "Content-Type": "application/json"}
-    })
+    .then(data => ingredients = data)
+    .then(() =>
+      {
+        // Retrieve all allergens
+        return fetch(baseUrl + 'allergen', {
+          mode: "cors", headers: { "Content-Type": "application/json"}
+        })
+      }
+    )
     .then(response => response.json())
     .then(data => {
       // Add a selected flag for each allergen for use in the form
       data.forEach(data => data.selected = false)
-      this.setState({ allAllergens: data })
+      allergens = data
+    })
+    .then(() => {
+      for(let i = 0; i < allergens.length; i++){
+        allergenMap.set(allergens[i]._id, allergens[i])
+      }
+
+      self.setState({
+        allIngredients: ingredients,
+        allAllergens: allergens,
+        allergenMap
+      })
     })
   }
 
@@ -82,7 +102,6 @@ class IngredientForm extends Component {
     let nm = false, bnm = false
     // Check for match
     for(let i = 0; i < allIngredients.length; i++){
-      console.log(name && (name.trim().toLowerCase() === allIngredients[i].name.toLowerCase()));
       if(name !== null && name.trim().toLowerCase() === allIngredients[i].name.trim().toLowerCase()){
         nm = true
         console.log("Checking name");
@@ -128,12 +147,14 @@ class IngredientForm extends Component {
 
   render(){
     let { allIngredients, nameValue, brandNameValue,
-      nameMatchFound, brandNameMatchFound, allAllergens } = this.state
+      nameMatchFound, brandNameMatchFound, allAllergens, allergenMap } = this.state
 
     let selectedAllergens = []
     allAllergens.forEach(allergen => {
       if(allergen.selected) selectedAllergens.push("" + allergen._id)
     })
+
+    //if(allIngredients) console.log(allergenMap.get(allIngredients[4].allergens[0].acronym));
     return(
       <div className={(allIngredients === null) ? "ingredient-form-disabled" : "ingredient-form"}>
         <h2>Ingredients</h2>
@@ -160,7 +181,11 @@ class IngredientForm extends Component {
 
 
         <h3>Temporary Ingredient List</h3>
-        {allIngredients && allIngredients.map(ingredient => <div key={ingredient._id}>{ingredient.name}{ingredient.brandName && " - "}{ingredient.brandName && (<span>{ingredient.brandName}</span>)}</div>)}
+        {allIngredients && allIngredients.map(ingredient =>
+          <div key={ingredient._id}>
+          {ingredient.name}{ingredient.brandName && " - "}{ingredient.brandName && (<span>{ingredient.brandName}</span>)}
+          {ingredient.allergens.length > 0 && ingredient.allergens.map(allergen => (<span key={allergen}> ({allergenMap.get(allergen).acronym})</span>))}
+        </div>)}
         <h3>Ingredient Inspector</h3>
 
 

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import TagSelectorCloud from './TagSelectorCloud'
 
 var baseUrl = "http://localhost:8000/api/v1/"
 
@@ -48,7 +49,6 @@ class IngredientForm extends Component {
     .then(response => response.json())
     .then(data => {
       // Add a selected flag for each allergen for use in the form
-      data.forEach(data => data.selected = false)
       allergens = data
     })
     .then(() => {
@@ -176,10 +176,9 @@ class IngredientForm extends Component {
           </label>
           <label>
             <p>Allergens:</p>
-            <select readOnly={true} onClick={(e) => this.onAllergenSelectionChanged(e)} multiple={true} value={selectedAllergens}>
-              {allAllergens && allAllergens.map(allergen => (<option key={allergen._id} value={allergen._id}>{allergen.name}</option>))}
-            </select>
+            {allAllergens.length > 0 && <TagSelectorCloud tags={allAllergens} title="Allergens"/>}
           </label>
+          <br/>
 
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
         </form>
@@ -192,6 +191,7 @@ class IngredientForm extends Component {
           {ingredient.allergens.length > 0 && ingredient.allergens.map(allergen => (<span key={allergen}> ({allergenMap.get(allergen).acronym})</span>))}
         </div>)}
         <h3>Ingredient Inspector</h3>
+
 
 
 

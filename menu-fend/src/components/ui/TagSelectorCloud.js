@@ -36,7 +36,7 @@ class TagSelectorCloud extends Component {
     return (
       <div className="tag-selector-cloud">
         {this.props.title && (<h3 className="cloud-title">{this.props.title}</h3>)}
-        {this.props.tags && this.props.tags.map(tag => (<span className={tag.selected ? "cloud-tag selected" : "cloud-tag"} key="tags.name" onClick={(e) => this.onTagClicked(tag)}>{tag.name}</span>))}
+        {this.props.tags && this.props.tags.map(tag => (<span className={tag.selected ? "cloud-tag selected" : "cloud-tag"} key={tag.name} onClick={(e) => this.onTagClicked(tag)}>{tag.name}</span>))}
       </div>
     )
   }

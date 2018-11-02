@@ -174,10 +174,8 @@ class IngredientForm extends Component {
             <p>Brand Name:
             <input type="text" value={brandNameValue} onChange={(e) => this.onBrandNameChanged(e)} disabled={!String(nameValue).length > 0} hint="Enter brand ame if applicable" /></p>
           </label>
-          <label>
-            <p>Allergens:</p>
-            {allAllergens.length > 0 && <TagSelectorCloud tags={allAllergens} title="Allergens"/>}
-          </label>
+          {/*-- Allergens Cloud Selector-- */}
+          {allAllergens.length > 0 && <TagSelectorCloud tags={allAllergens} title="Allergens"/>}
           <br/>
 
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>

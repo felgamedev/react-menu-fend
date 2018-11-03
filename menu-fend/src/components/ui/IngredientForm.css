@@ -1,0 +1,25 @@
+.ingredient-form-container {
+}
+
+.ingredient-form-disabled {
+}
+
+.ingredient-form {
+  background-color: lightgreen;
+  width: 800px;
+  margin: 0;
+  padding: 12px;
+}
+
+.input-mode-selector-container {
+  width: 800px;
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+}
+
+.input-mode-selector {
+  margin: 0 auto;
+  width: 400px;
+  text-align: center;
+}

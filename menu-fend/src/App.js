@@ -4,7 +4,6 @@ import Header from './components/ui/Header'
 import Menu from './components/Menu'
 import AllergenForm from './components/ui/AllergenForm'
 import IngredientForm from './components/ui/IngredientForm'
-import Allergen from './objects/Allergen'
 import './App.css';
 
 var baseUrl = "http://localhost:8000/api/v1/"

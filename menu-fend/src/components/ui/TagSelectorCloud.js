@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import './TagSelectorCloud.css'
 
-class TagSelectorCloud extends Component {
+export const TagSelectorCloud = class TagSelectorCloud extends Component {
   state = {
     tags: null
   }
@@ -34,12 +34,21 @@ class TagSelectorCloud extends Component {
 
   render(){
     return (
-      <div className="tag-selector-cloud">
-        {this.props.title && (<h3 className="cloud-title">{this.props.title}</h3>)}
+      <div className="tag-selector-container tag-selector-cloud">
+        {this.props.title && (<h3 className="tag-selector-title">{this.props.title}</h3>)}
         {this.props.tags && this.props.tags.map(tag => (<span className={tag.selected ? "cloud-tag selected" : "cloud-tag"} key={tag.name} onClick={(e) => this.onTagClicked(tag)}>{tag.name}</span>))}
       </div>
     )
   }
 }
 
-export default TagSelectorCloud
+export const TagSelectorSingleLine = class TagSelectorSingleLine extends TagSelectorCloud {
+  render(){
+    return(
+      <div className="tag-selector-container tag-selector-single-line">
+        {this.props.title && (<h3 className="tag-selector-title">{this.props.title}</h3>)}
+        {this.props.tags && this.props.tags.map(tag => (<div className={tag.selected ? "cloud-tag selected" : "cloud-tag"} key={tag.name} onClick={(e) => this.onTagClicked(tag)}>{tag.name}</div>))}
+      </div>
+    )
+  }
+}

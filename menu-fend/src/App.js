@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Header from './components/ui/Header'
 import Menu from './components/Menu'
 import AllergenForm from './components/ui/AllergenForm'
-import IngredientForm from './components/ui/IngredientForm'
+import IngredientsRoute from './components/ui/IngredientsRoute'
 import './App.css';
 
 var baseUrl = "http://localhost:8000/api/v1/"
@@ -132,7 +132,7 @@ class App extends Component {
 
             <Route exact path="/" render={() => <Menu menu={this.state.menu[0]}/>} />
             <Route exact path="/allergen" render={() => <AllergenForm />} />
-            <Route exact path="/ingredient" render={() => <IngredientForm user={this.state.user}/>} />
+            <Route exact path="/ingredient" render={() => <IngredientsRoute user={this.state.user}/>} />
           </div>
         </Router>
       </div>

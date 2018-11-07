@@ -1,18 +1,19 @@
 import React, { Component } from 'react'
 import SingleIngredientForm from './SingleIngredientForm'
+import FoodComponentForm from './FoodComponentForm'
 import { TagSelectorCloud, TagSelectorSingleLine } from './TagSelectorCloud'
 import './IngredientForm.css'
 
 var baseUrl = "http://localhost:8000/api/v1/"
 
-class IngredientForm extends Component {
+class IngredientsRoute extends Component {
   state = {
     allIngredients: null,
     usersIngredients: null,
     allAllergens: null,
     allergenMap: null,
     // Single/Component Mode variables
-    singleIngredientMode: true,
+    singleIngredientMode: false,
     componentIngredients: [],
     componentNameValue: '',
     componentBrandNameValue: ''
@@ -96,6 +97,10 @@ class IngredientForm extends Component {
     })
   }
 
+  onSubmitFoodComponentForm(data){
+
+  }
+
   toggleInputMode(singleIngredientMode){
       this.setState({
         singleIngredientMode
@@ -113,12 +118,16 @@ class IngredientForm extends Component {
         <h2>Add New Ingredient</h2>
 
         <div className="input-mode-selector-container">
-          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "LightGreen" : "White") }} onClick={(e) => this.toggleInputMode(true)}>Single Ingredient</div>
-          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "white" : "LightGreen") }} onClick={(e) => this.toggleInputMode(false)}>Premade Ingredient</div>
+          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "LightGreen" : "White") }} onClick={(e) => this.toggleInputMode(true)}>Basic Ingredient</div>
+          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "White" : "LightGreen") }} onClick={(e) => this.toggleInputMode(false)}>Components</div>
         </div>
 
         {(this.state.singleIngredientMode && allAllergens) && /* Check for allAllergens as its presence means ingredients should already be loaded in chained promise */
           (<SingleIngredientForm allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitSingleIngredientForm.bind(this)}/>)
+        }
+
+        {(!this.state.singleIngredientMode && allAllergens) &&
+          (<FoodComponentForm allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitFoodComponentForm.bind(this)}/>)
         }
 
         <h3>Temporary Ingredient List</h3>
@@ -131,4 +140,4 @@ class IngredientForm extends Component {
   }
 }
 
-export default IngredientForm
+export default IngredientsRoute

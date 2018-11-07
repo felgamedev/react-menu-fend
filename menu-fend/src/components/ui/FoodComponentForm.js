@@ -1,245 +1,236 @@
-import React, { Component } from 'react'
-import { TagSelectorCloud, TagSelectorSingleLine } from './TagSelectorCloud'
-import './IngredientForm.css'
+import React from 'react'
+import SingleIngredientForm from './SingleIngredientForm'
+import './FoodComponentForm.css'
+const escapeStringRegexp = require('escape-string-regexp')
 
-var baseUrl = "http://localhost:8000/api/v1/"
-
-class IngredientForm extends Component {
+class FoodComponentForm extends SingleIngredientForm {
   state = {
-    nameValue: '',
-    brandNameValue: '',
-    allIngredients: null,
-    usersIngredients: null,
-    nameMatchFound: false,
-    brandNameMatchFound: false,
-    allAllergens: [],
-    allergenMap: null,
-    // Single/Component Mode variables
-    singleIngredientMode: false,
-    componentIngredients: [],
-    componentNameValue: '',
-    componentBrandNameValue: ''
+      nameValue: '',
+      brandNameValue: '',
+      searchValue: '',
+      allAllergens: [],
+      allIngredients: null,
+      // Ingredients in the right hand select
+      selectedIngredients: [],
+      // Filtered list of ingredients on left hand select
+      leftShownIngredients: [],
+      // last known id's of highlighted ingredients in the left hand select
+      prevLeftHighlighted: [],
+      // last known id's of highlighted ingredients in the right hand select
+      prevRightHighlighted: [],
+
+      nameMatchFound: false,
+      brandNameMatchFound: false,
   }
 
   componentWillMount(){
-    // TODO if user is logged in, retrieve the list of ingredients they have added
-    if(this.props.user !== null){
-      console.log("User logged in, retrieving their ingredients");
-      // Use the /u prefix to specify new route to handle find by user id
-      fetch(baseUrl + 'ingredient/u/' + this.props.user._id, {
-        mode: "cors", headers: { "Content-type": "application/json"}
-      })
-      .then(response => response.json())
-      .then(data => this.setState({usersIngredients: data}))
-    }
-
-    var self = this
-    var ingredients = null
-    var allergens = null
-    var allergenMap = new Map()
-
-    // Retrieve all ingredients and allergens in a chain to create a map and save to state
-    fetch(baseUrl + 'ingredient', {
-      mode: "cors", headers: { "Content-type": "application/json"}
-    })
-    .then(response => response.json())
-    .then(data => ingredients = data)
-    .then(() =>
-      {
-        // Retrieve all allergens
-        return fetch(baseUrl + 'allergen', {
-          mode: "cors", headers: { "Content-Type": "application/json"}
-        })
-      }
-    )
-    .then(response => response.json())
-    .then(data => {
-      // Add a selected flag for each allergen for use in the form
-      allergens = data
-    })
-    .then(() => {
-      for(let i = 0; i < allergens.length; i++){
-        allergenMap.set(allergens[i]._id, allergens[i])
-      }
-
-      self.setState({
-        allIngredients: ingredients,
-        allAllergens: allergens,
-        allergenMap
-      })
+    const {allAllergens, allIngredients } = this.props
+    this.setState({
+      allAllergens,
+      allIngredients,
+      leftShownIngredients: allIngredients
     })
   }
 
-  onNameChanged(e){
+  onFilterValueChange(e){
+    let { leftShownIngredients } = this.state
     let string = e.target.value
+    let escapedString = escapeStringRegexp(string)
 
-    this.checkForMatches(string, this.state.brandNameValue, null)
+    let match = new RegExp(escapedString.toLowerCase())
 
-    // Store the value in state
-    this.setState({
-      nameValue: string
-    })
-  }
+    // Reset if search value removed
+    if(string.length === 0) {
+      leftShownIngredients = this.state.allIngredients
+    }
 
-  onBrandNameChanged(e){
-    let string = e.target.value
-
-    this.setState({
-      brandNameValue: string
-    })
-    this.checkForMatches(this.state.nameValue, string, null)
-  }
-
-  onAllergenSelectionChanged(e){
-    let selectedAllergen = e.target.value
-    let allergens = this.state.allAllergens
-
-    for(let i = 0; i < allergens.length; i++){
-      allergens[i].selected = (allergens[i]._id === selectedAllergen) ? !allergens[i].selected : allergens[i].selected
+    if(string.length > 0){
+      leftShownIngredients = leftShownIngredients.filter(ing => match.test(ing.name.toLowerCase()) || match.test(ing.brandName.toLowerCase()))
     }
 
     this.setState({
-      allAllergens: allergens
+      searchValue: string,
+      leftShownIngredients
     })
-  }
-
-  checkForMatches(name, bname){
-    let { allIngredients, nameMatchFound, brandNameMatchFound } = this.state
-    let nm = false, bnm = false
-    // Check for match
-    for(let i = 0; i < allIngredients.length; i++){
-      if(name !== null && name.trim().toLowerCase() === allIngredients[i].name.trim().toLowerCase()){
-        nm = true
-        console.log("Checking name");
-      }
-
-      if(bname !== null && bname.trim().toLowerCase() === allIngredients[i].brandName.toLowerCase()) bnm = true
-    }
-
-    // Set the state for button state
-    if(nm !== nameMatchFound) this.setState({ nameMatchFound: nm })
-    if(bnm !== brandNameMatchFound) this.setState({ brandNameMatchFound: bnm })
 
   }
 
   onSubmitForm(e){
     e.preventDefault()
-    let { nameValue: name, brandNameValue: brandName, allIngredients, allAllergens } = this.state
+    const {nameValue, brandNameValue, allAllergens} = this.state
 
-    let allergensArray = []
-    allAllergens.forEach(allergen => {
-      if(allergen.selected) allergensArray.push(allergen._id)
-    })
+    // let allergenArray = []
+    // for(let i = 0; i < allAllergens.length; i++){
+    //   if(allAllergens[i].selected) allergenArray.push(allAllergens[i]._id)
+    // }
+    //
+    // this.props.onSubmit({ name: nameValue, brandName: brandNameValue, allergens: allergenArray})
+  }
 
-    let data = JSON.stringify({ name: name, brandName: brandName, allergens: allergensArray })
+  // Move whatever ingredients are in the shown list to the selected list
+  moveAllToSelected(){
+    const { allIngredients, selectedIngredients, leftShownIngredients } = this.state
 
-    fetch(baseUrl + "ingredient", {
-      method: "POST",
-      mode: "cors",
-      body: data,
-      headers: { "Content-Type" : "application/json"}
-    })
-    .then(response => response.json())
-    .then(data => {
-      allIngredients.push(data)
-      for(let i = 0; i < allAllergens.length; i++){
-        allAllergens[i].selected = false
-      }
-      this.setState({
-        allIngredients,
-        nameValue: '',
-        brandNameValue: '',
-        formSubmitDisabled: false
-      })
+    for(let i = 0; i < leftShownIngredients.length; i++){
+      if(!selectedIngredients.includes(leftShownIngredients[i])) selectedIngredients.push(leftShownIngredients[i])
+    }
+
+    this.setState({
+      selectedIngredients
     })
   }
 
-  toggleInputMode(singleIngredientMode){
+  moveToSelected(){
+    const { allIngredients, selectedIngredients } = this.state
+    for(let i = 0; i < allIngredients.length; i++){
+      if(allIngredients[i].selected && !selectedIngredients.includes(allIngredients[i])) selectedIngredients.push(allIngredients[i])
+    }
+
+    for(let j = 0; j < allIngredients.length; j++){
+      allIngredients[j].selected = false
+    }
+
+    this.setState({
+      allIngredients,
+      selectedIngredients
+    })
+  }
+
+  moveAllToUnselected(){
+    this.setState({
+      selectedIngredients: []
+    })
+  }
+
+  moveToUnselected(){
+    const { selectedIngredients, prevRightHighlighted } = this.state
+
+    for(let i = 0; i < prevRightHighlighted.length; i++){
+      console.log(selectedIngredients.indexOf(prevRightHighlighted[i]));
+      selectedIngredients.splice(selectedIngredients.findIndex(ing => ing._id === prevRightHighlighted[i]), 1)
+    }
+
+
+
+    this.setState({
+      selectedIngredients,
+      prevRightHighlighted: []
+    })
+  }
+
+  onIngredientSelected(e){
+    var { allIngredients, selectedIngredients, prevLeftHighlighted, prevRightHighlighted } = this.state
+    var select = e.target
+    var options = e.target.options
+
+    // Determine which select is being changed by checking its id
+    var left = e.target.id === "leftSelect" ? true : false
+
+    // Pick the required prevHighlighted array depending on the left bool
+    let prevHighlighted = (left) ? prevLeftHighlighted : prevRightHighlighted
+    var highlightedIngredients = []
+
+    // Deselect all previously highlighted ingredients in the allIngredients array
+    for(let i = 0; i < prevHighlighted.length; i++){
+      let index = allIngredients.findIndex(ing => ing._id === prevHighlighted[i])
+      allIngredients[index].selected = false
+    }
+
+    // Create a new list of highlighted ingredients from the select
+    for(let i = 0; i < options.length; i++){
+      if(options[i].selected) highlightedIngredients.push(options[i].value)
+    }
+
+    if(left){
+      for(let j = 0; j < highlightedIngredients.length; j++){
+        let ingredientIndex = allIngredients.findIndex(ing => ing._id === highlightedIngredients[j])
+        console.log("index: " + ingredientIndex);
+        allIngredients[ingredientIndex].selected = true
+      }
+
       this.setState({
-        singleIngredientMode
+        allIngredients: allIngredients,
+        prevLeftHighlighted: highlightedIngredients
       })
+    } else {
+      this.setState({
+        selectedIngredients: selectedIngredients,
+        prevRightHighlighted: highlightedIngredients
+      })
+    }
+
   }
 
   render(){
-    let { allIngredients, nameValue, brandNameValue,
-      nameMatchFound, brandNameMatchFound, allAllergens, allergenMap } = this.state
+    const {nameValue, brandNameValue, searchValue, leftShownIngredients, selectedIngredients, allAllergens, nameMatchFound, brandNameMatchFound, userIngredients} = this.state
 
     let selectedAllergens = []
     allAllergens.forEach(allergen => {
       if(allergen.selected) selectedAllergens.push("" + allergen._id)
     })
 
-    if(allIngredients) allIngredients.sort((a, b) => (a.name.toUpperCase() === b.name.toUpperCase() ? 0 : (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1))
+    return (
+      <div>
+        <form className="ingredient-form-component" onSubmit={e => this.onSubmitForm(e)}>
+        <p>Here you can put together components that are either bought/premade (such as worcestershire sauce) or that have set recipes (such as a salsa)</p>
 
-    //if(allIngredients) console.log(allergenMap.get(allIngredients[4].allergens[0].acronym));
-    return(
-      <div className={(allIngredients === null) ? "ingredient-form-conatiner-disabled" : "ingredient-form-container"}>
-        <h2>Add New Ingredient</h2>
-
-        <div className="input-mode-selector-container">
-          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "LightGreen" : "White") }} onClick={(e) => this.toggleInputMode(true)}>Single Ingredient</div>
-          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "white" : "LightGreen") }} onClick={(e) => this.toggleInputMode(false)}>Premade Ingredient</div>
-        </div>
-
-        {this.state.singleIngredientMode &&
-          (<form className="ingredient-form-single" onSubmit={e => this.onSubmitForm(e)}>
+          <div className="ingredient-names-container">
             <label>
               <p>Name:
-              <input type="text" value={nameValue} onChange={(e) => this.onNameChanged(e)} disabled={false} placeholder="e.g. Oat flour"/></p>
+              <input type="text" value={nameValue} onChange={(e) => this.onNameChanged(e)} disabled={false} placeholder="e.g. Sour Cream"/></p>
             </label>
             <label>
               <p>Brand Name:
-              <input type="text" value={brandNameValue} onChange={(e) => this.onBrandNameChanged(e)} disabled={!String(nameValue).length > 0} placeholder="e.g. Big Mill" /></p>
+              <input type="text" value={brandNameValue} onChange={(e) => this.onBrandNameChanged(e)} disabled={!String(nameValue).length > 0} placeholder="e.g. Farmers" /></p>
             </label>
-            {/*-- Allergens Cloud Selector-- */}
-            {allAllergens.length > 0 && <TagSelectorCloud tags={allAllergens} title="Allergens"/>}
-            <br/>
+          </div>
 
-            <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
-          </form>)
-        }
-
-        {!this.state.singleIngredientMode && (
-          <form className="ingredient-form-multiple" onSubmit={e => this.onSubmitForm(e)}>
-            <label>
-              <p>Name:
-              <input type="text" value={nameValue} onChange={(e) => this.onNameChanged(e)} disabled={false} placeholder="e.g. Yellow Mustard"/></p>
-            </label>
-            <label>
-              <p>Brand Name:
-              <input type="text" value={brandNameValue} onChange={(e) => this.onBrandNameChanged(e)} disabled={!String(nameValue).length > 0} placeholder="e.g. Heinz" /></p>
-            </label>
-            <label>
-            <p>Ingredients:
-            <input type="text" /></p>
+          <div className="ingredient-selectors-filter-container">
+            {/* To be implemented when I have the user finalized */}
+            {userIngredients &&<label>
+              <p>
+              <input type="checkbox" checked={false /* isMyIngredientsChecked */} onChange={() => null /* this.onMyIngredientsCheckboxChanged */ }/>Only my ingredients:</p>
+            </label>}
 
             <label>
-              <TagSelectorSingleLine tags={this.state.componentIngredients} title="Component Ingredients"/>
+              <p>Search:
+              <input type="text" value={searchValue} onChange={(e) => this.onFilterValueChange(e)} /></p>
             </label>
 
-            </label>
-            {/*-- Allergens Cloud Selector-- */}
-            {allAllergens.length > 0 && <TagSelectorCloud tags={allAllergens} title="Allergens"/>}
-            <br/>
-
-            <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
-          </form>
-        )}
-
-
-        <h3>Temporary Ingredient List</h3>
-        {allIngredients && allIngredients.map(ingredient =>
-          <div key={ingredient._id}>
-          {ingredient.name}{ingredient.brandName && " - "}{ingredient.brandName && (<span>{ingredient.brandName}</span>)}
-          {ingredient.allergens.length > 0 && ingredient.allergens.map(allergen => (<span key={allergen}> ({allergenMap.get(allergen).acronym})</span>))}
-        </div>)}
-        <h3>Ingredient Inspector</h3>
+            <button onClick={(e) => e.preventDefault() /* onSortIngredientsList */}>Sort</button>
+          </div>
 
 
 
+          <div className="ingredient-selectors-container">
+            <select id="leftSelect" multiple size={12} onChange={(e) => this.onIngredientSelected(e)}>
+              {leftShownIngredients.length > 0 && leftShownIngredients.map(ingredient =>
+                (<option key={ingredient._id} value={ingredient._id}>{ingredient.name}{ingredient.brandName && (" - " + ingredient.brandName)}</option>)
+              )}
+            </select>
 
-      </div>)
+            <div className="ingredient-selectors-button-container">
+              <div className="ingredient-selector-button move-all-right" onClick={() => this.moveAllToSelected()}>All Right</div>
+              <div className="ingredient-selector-button move-selected-right" onClick={() => this.moveToSelected()}>Selected Right</div>
+              <div className="ingredient-selector-button move-selected-left" onClick={() => this.moveToUnselected()}>Selected Left</div>
+              <div className="ingredient-selector-button move-all-left" onClick={() => this.moveAllToUnselected()}>All Left</div>
+            </div>
+
+            <select multiple size={12} onChange={(e) => this.onIngredientSelected(e)}>
+              {selectedIngredients.length > 0 && selectedIngredients.map(ingredient =>
+                (<option key={ingredient._id} value={ingredient._id}>{ingredient.name}{ingredient.brandName && (" - " + ingredient.brandName)}</option>))}
+            </select>
+          </div>
+
+          <div className="ingredients-summary">
+            <p>{/* if ingredients are in the selected list, show a summary */}</p>
+          </div>
+
+          <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
+        </form>
+      </div>
+    )
   }
 }
 
-export default IngredientForm
+export default FoodComponentForm

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import SingleIngredientForm from './SingleIngredientForm'
 import FoodComponentForm from './FoodComponentForm'
-import { TagSelectorCloud, TagSelectorSingleLine } from './TagSelectorCloud'
 import './IngredientForm.css'
 
 var baseUrl = "http://localhost:8000/api/v1/"

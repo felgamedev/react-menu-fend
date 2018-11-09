@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { TagSelectorCloud } from './TagSelectorCloud'
+import './IngredientForms.css'
 
 class SingleIngredientForm extends Component {
   state = {
@@ -18,7 +19,7 @@ class SingleIngredientForm extends Component {
       allIngredients
     })
   }
-  
+
   onNameChanged(e){
     let string = e.target.value
 

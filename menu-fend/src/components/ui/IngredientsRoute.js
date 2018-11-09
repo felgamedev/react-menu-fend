@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import SingleIngredientForm from './SingleIngredientForm'
 import FoodComponentForm from './FoodComponentForm'
-import './IngredientForm.css'
+import './IngredientsRoute.css'
 
 var baseUrl = "http://localhost:8000/api/v1/"
 

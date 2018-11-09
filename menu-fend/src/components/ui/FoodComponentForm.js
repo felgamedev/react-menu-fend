@@ -1,6 +1,6 @@
 import React from 'react'
 import SingleIngredientForm from './SingleIngredientForm'
-import './FoodComponentForm.css'
+import './IngredientForms.css'
 const escapeStringRegexp = require('escape-string-regexp')
 
 class FoodComponentForm extends SingleIngredientForm {

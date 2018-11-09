@@ -1,4 +1,6 @@
 .ingredient-form-container {
+  width: 90%;
+  margin: 0 auto;
 }
 
 .ingredient-form-disabled {
@@ -13,9 +15,9 @@
 
 .input-mode-selector-container {
   width: 800px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-around;
-  margin: 0;
 }
 
 .input-mode-selector {

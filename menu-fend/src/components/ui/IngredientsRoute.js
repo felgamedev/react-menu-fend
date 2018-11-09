@@ -118,7 +118,7 @@ class IngredientsRoute extends Component {
         }
 
         {(!this.state.singleIngredientMode && allAllergens) &&
-          (<FoodComponentForm baseUrl={baseUrl} allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitFoodComponentForm.bind(this)}/>)
+          (<FoodComponentForm baseUrl={baseUrl} allAllergens={allAllergens} allIngredients={allIngredients} />)
         }
       </div>)
   }

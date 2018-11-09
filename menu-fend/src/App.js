@@ -113,8 +113,6 @@ class App extends Component {
           })
         }
       })
-
-      })
     }
 
   onClickLogout(){

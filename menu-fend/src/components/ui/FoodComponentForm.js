@@ -28,7 +28,7 @@ class FoodComponentForm extends SingleIngredientForm {
     this.setState({
       allAllergens,
       allIngredients,
-      leftShownIngredients: allIngredients
+      leftShownIngredients: allIngredients.map(ingredient => ingredient)
     })
   }
 
@@ -128,21 +128,30 @@ class FoodComponentForm extends SingleIngredientForm {
     })
   }
 
+  // Remove all ingredients from the selected array, back to the shown array
   moveAllToUnselected(){
+    let { leftShownIngredients } = this.state
+    const { allIngredients, searchValue } = this.state
+
+    leftShownIngredients = allIngredients.map(ing => ing)
+
     this.setState({
-      selectedIngredients: []
+      leftShownIngredients,
+      selectedIngredients: [],
+      prevRightHighlighted: [],
+      searchValue
     })
   }
 
   moveToUnselected(){
-    const { selectedIngredients, prevRightHighlighted } = this.state
+    const { selectedIngredients, prevRightHighlighted, leftShownIngredients, allIngredients } = this.state
 
     for(let i = 0; i < prevRightHighlighted.length; i++){
       console.log(selectedIngredients.indexOf(prevRightHighlighted[i]));
       selectedIngredients.splice(selectedIngredients.findIndex(ing => ing._id === prevRightHighlighted[i]), 1)
+
+      leftShownIngredients.push(allIngredients[allIngredients.findIndex(ing => ing._id === prevRightHighlighted[i])])
     }
-
-
 
     this.setState({
       selectedIngredients,

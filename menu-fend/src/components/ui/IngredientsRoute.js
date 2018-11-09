@@ -12,7 +12,7 @@ class IngredientsRoute extends Component {
     allAllergens: null,
     allergenMap: null,
     // Single/Component Mode variables
-    singleIngredientMode: false,
+    singleIngredientMode: true,
     componentIngredients: [],
     componentNameValue: '',
     componentBrandNameValue: ''
@@ -118,7 +118,7 @@ class IngredientsRoute extends Component {
 
         <div className="input-mode-selector-container">
           <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "LightGreen" : "White") }} onClick={(e) => this.toggleInputMode(true)}>Basic Ingredient</div>
-          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "White" : "LightGreen") }} onClick={(e) => this.toggleInputMode(false)}>Components</div>
+          <div className="input-mode-selector" style={{backgroundColor: (this.state.singleIngredientMode ? "White" : "LightGreen") }} onClick={(e) => this.toggleInputMode(false)}>Food Components</div>
         </div>
 
         {(this.state.singleIngredientMode && allAllergens) && /* Check for allAllergens as its presence means ingredients should already be loaded in chained promise */
@@ -128,13 +128,6 @@ class IngredientsRoute extends Component {
         {(!this.state.singleIngredientMode && allAllergens) &&
           (<FoodComponentForm allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitFoodComponentForm.bind(this)}/>)
         }
-
-        <h3>Temporary Ingredient List</h3>
-        {allIngredients && allIngredients.map(ingredient =>
-          <div key={ingredient._id}>
-          {ingredient.name}{ingredient.brandName && " - "}{ingredient.brandName && (<span>{ingredient.brandName}</span>)}
-          {ingredient.allergens.length > 0 && ingredient.allergens.map(allergen => (<span key={allergen}> ({allergenMap.get(allergen).acronym})</span>))}
-        </div>)}
       </div>)
   }
 }

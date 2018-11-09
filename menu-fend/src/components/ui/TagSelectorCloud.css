@@ -1,0 +1,33 @@
+.tag-selector-container {
+  background-color: lightgrey;
+  border-radius: 10px;
+  padding: 12px;
+  width: 400px;
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.tag-selector-cloud {
+ justify-content: space-between;
+ flex-wrap: wrap;
+}
+
+.tag-selector-single-line {
+  align-items: flex-start;
+}
+
+.cloud-tag.selected {
+  background: lightblue;
+}
+
+.cloud-tag {
+  background: white;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.tag-selector-title {
+  width: 100%;
+  margin-top: 0
+}

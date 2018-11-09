@@ -12,6 +12,7 @@ const Test = require('./app/models/test')
 const AllergenRouter = require('./app/routes/allergen')
 const IngredientRouter = require('./app/routes/ingredient')
 const UserRouter = require('./app/routes/user')
+const FoodComponentRouter = require('./app/routes/foodcomponent')
 
 // Define a port to listen on for local testing
 const PORT = 8000
@@ -35,6 +36,7 @@ app.use(urlPrefix, router)
 app.use(urlPrefix, AllergenRouter)
 app.use(urlPrefix, IngredientRouter)
 app.use(urlPrefix, UserRouter)
+app.use(urlPrefix, FoodComponentRouter)
 
 // Middleware for extra processing
 router.use((req, res, next) => {
@@ -57,25 +59,6 @@ router.route('/tests')
       res.json({ message: "Test successfully added "})
     })
   });
-
-// Route for general FoodComponent calls, get all and add new
-router.route('/foodcomponent')
-  .post((req, res) => {
-    var foodComponent = new FoodComponent()
-    foodComponent.name = req.body.name
-    foodComponent.ingredients = req.body.ingredients
-
-    foodComponent.save((err) => {
-      if(err) res.send(err)
-      res.json({ message: "Food component added successfully"})
-    })
-  })
-  .get((req, res) => {
-    FoodComponent.find((err, foodComponents) => {
-      if(err) res.send(err)
-      res.json(foodComponents)
-    })
-  })
 
 // Start up the API listener
 app.listen(PORT, () => {

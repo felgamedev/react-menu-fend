@@ -22,8 +22,9 @@ class AllergenListSimple extends Component {
               margin: 4,
               padding: 8
             }}>
-            {allergen.name}{
-              config.canDelete && (<div style={{
+            {allergen.name}
+            {allergen.acronym && (<span> ({allergen.acronym})</span>)}
+            {config.canDelete && (<div style={{
                   display: "inline",
                   background: "#ccc",
                   marginLeft: 4,

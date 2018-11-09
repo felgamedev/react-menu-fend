@@ -1,10 +1,11 @@
+
+
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Header from './components/ui/Header'
 import Menu from './components/Menu'
 import AllergenForm from './components/ui/AllergenForm'
-import IngredientForm from './components/ui/IngredientForm'
-import Allergen from './objects/Allergen'
+import IngredientsRoute from './components/ui/IngredientsRoute'
 import './App.css';
 
 var baseUrl = "http://localhost:8000/api/v1/"
@@ -59,12 +60,23 @@ class App extends Component {
         clientId: "23127013757-6qei2k33fp0v6svtol5hv7lpsaekfqhs.apps.googleusercontent.com"
       });
 
-      auth2.isSignedIn.listen(status => {
-        console.log(status)
+      // auth2.isSignedIn.listen(status => {
+      // })
+      //
+      // auth2.currentUser.listen(user =>
+      // })
+
+      this.setState({
+        auth2
       })
+    })
 
 
-      auth2.currentUser.listen(user => {
+  }
+
+  onClickLogin(){
+    this.state.auth2.signIn()
+    .then((user) => {
         const profile = user.getBasicProfile()
 
         // If the user is logged in
@@ -102,17 +114,8 @@ class App extends Component {
         }
       })
 
-      this.setState({
-        auth2
       })
-    })
-
-
-  }
-
-  onClickLogin(){
-    this.state.auth2.signIn()
-  }
+    }
 
   onClickLogout(){
     this.state.auth2.signOut()
@@ -120,10 +123,11 @@ class App extends Component {
   }
 
   render() {
+    const { user } = this.state
     return (
       <div className="App">
-        <button onClick={(e) => this.onClickLogin(e)} id="login">Login</button>
-        <button onClick={(e) => this.state.auth2.signOut()}>Logout</button>
+        {!user && (<button onClick={(e) => this.onClickLogin(e)} id="login">Login</button>)}
+        {user && (<button onClick={(e) => this.onClickLogout(e)}>Logout</button>)}
         <Header user={this.state.user}/>
         <Router>
           <div>
@@ -133,7 +137,7 @@ class App extends Component {
 
             <Route exact path="/" render={() => <Menu menu={this.state.menu[0]}/>} />
             <Route exact path="/allergen" render={() => <AllergenForm />} />
-            <Route exact path="/ingredient" render={() => <IngredientForm user={this.state.user}/>} />
+            <Route exact path="/ingredient" render={() => <IngredientsRoute user={this.state.user}/>} />
           </div>
         </Router>
       </div>

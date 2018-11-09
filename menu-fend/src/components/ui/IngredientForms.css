@@ -1,0 +1,46 @@
+form {
+  width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ingredient-names-container {
+
+}
+
+/* -Select style- */
+.ingredient-selectors-container {
+  border: 1px blue solid;
+  display: flex;
+  margin: 0 auto;
+  flex-wrap: nowrap;
+}
+
+select:first-child, select:last-child{
+  margin: 0 auto;
+}
+
+select {
+  width: 250px;
+  word-wrap: break-word;
+}
+
+.ingredient-selectors-button-container {
+  width: 96px;
+  margin: 32px 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-content: space-around;
+}
+
+.ingredient-selector-button {
+  width: 100%;
+  border: 1px lightgrey dotted;
+}
+
+/* -Search ingredients style- */
+
+.ingredient-selectors-filter-container {
+  text-align: left;
+}

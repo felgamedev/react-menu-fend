@@ -55,16 +55,29 @@ class FoodComponentForm extends SingleIngredientForm {
 
   }
 
-  onSubmitForm(e){
+  onSubmit(e){
     e.preventDefault()
-    const {nameValue, brandNameValue, allAllergens} = this.state
+    const { selectedIngredients, allIngredients, nameValue, brandNameValue } =  this.state
+    var self = this
 
-    // let allergenArray = []
-    // for(let i = 0; i < allAllergens.length; i++){
-    //   if(allAllergens[i].selected) allergenArray.push(allAllergens[i]._id)
-    // }
-    //
-    // this.props.onSubmit({ name: nameValue, brandName: brandNameValue, allergens: allergenArray})
+    let ingredientsArray = []
+    for(let i = 0; i < selectedIngredients.length; i++){
+      ingredientsArray.push(selectedIngredients[i]._id)
+    }
+
+    fetch(this.props.baseUrl + "foodcomponent", {
+      method: "POST",
+      mode: "cors",
+      body: JSON.stringify({ name: nameValue, brandName: brandNameValue, ingredients: ingredientsArray}),
+      headers: { "Content-Type" : "application/json"}
+    })
+    .then(response => response.json())
+    .then(data => {
+      allIngredients.push(data)
+      self.setState({
+        allIngredients
+      })
+    })
   }
 
   // Move an ingredient to the right.
@@ -102,7 +115,7 @@ class FoodComponentForm extends SingleIngredientForm {
   }
 
   moveToSelected(){
-    const { allIngredients, selectedIngredients, leftShownIngredients } = this.state
+    const { selectedIngredients, leftShownIngredients } = this.state
     var { prevLeftHighlighted } = this.state
     // Cycle through all of the ingredients
     for(let i = 0; i < leftShownIngredients.length; i++){
@@ -160,7 +173,6 @@ class FoodComponentForm extends SingleIngredientForm {
 
   onIngredientSelected(e){
     var { allIngredients, selectedIngredients, prevLeftHighlighted, prevRightHighlighted } = this.state
-    var select = e.target
     var options = e.target.options
 
     // Determine which select is being changed by checking its id
@@ -221,7 +233,7 @@ class FoodComponentForm extends SingleIngredientForm {
 
     return (
       <div>
-        <form className="ingredient-form-component" onSubmit={e => this.onSubmitForm(e)}>
+        <form className="ingredient-form-component" onSubmit={e => this.onSubmit(e)}>
         <p>Here you can put together components that are either bought/premade (such as worcestershire sauce) or that have set recipes (such as a salsa)</p>
 
           <div className="ingredient-names-container">

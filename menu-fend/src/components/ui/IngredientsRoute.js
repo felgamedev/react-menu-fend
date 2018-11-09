@@ -67,10 +67,6 @@ class IngredientsRoute extends Component {
     })
   }
 
-  onIngredientSubmitted(ingredient){
-
-  }
-
   // Must be bound to this
   onSubmitSingleIngredientForm(data){
     const { allIngredients, allAllergens} = this.state
@@ -94,10 +90,6 @@ class IngredientsRoute extends Component {
         formSubmitDisabled: false
       })
     })
-  }
-
-  onSubmitFoodComponentForm(data){
-
   }
 
   toggleInputMode(singleIngredientMode){
@@ -126,7 +118,7 @@ class IngredientsRoute extends Component {
         }
 
         {(!this.state.singleIngredientMode && allAllergens) &&
-          (<FoodComponentForm allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitFoodComponentForm.bind(this)}/>)
+          (<FoodComponentForm baseUrl={baseUrl} allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitFoodComponentForm.bind(this)}/>)
         }
       </div>)
   }

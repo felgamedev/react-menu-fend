@@ -81,6 +81,13 @@ class SingleIngredientForm extends Component {
     }
 
     this.props.onSubmit({ name: nameValue, brandName: brandNameValue, allergens: allergenArray})
+
+    this.setState({
+      nameValue: '',
+      brandNameValue: '',
+      nameMatchFound: false,
+      brandNameMatchFound: false
+    })
   }
 
   render(){

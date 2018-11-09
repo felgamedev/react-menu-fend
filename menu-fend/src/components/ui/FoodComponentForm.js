@@ -67,32 +67,64 @@ class FoodComponentForm extends SingleIngredientForm {
     // this.props.onSubmit({ name: nameValue, brandName: brandNameValue, allergens: allergenArray})
   }
 
+  // Move an ingredient to the right.
+  // Does not change the state
+  moveIngredientRight(ingredient){
+    const { selectedIngredients } = this.state
+    // Push them into the selected list
+    selectedIngredients.push(ingredient)
+    // Remove the selected flag
+    ingredient.selected = false
+  }
+
   // Move whatever ingredients are in the shown list to the selected list
   moveAllToSelected(){
-    const { allIngredients, selectedIngredients, leftShownIngredients } = this.state
-
+    const { selectedIngredients } = this.state
+    var { leftShownIngredients, prevLeftHighlighted } = this.state
+    // Move all to the right
     for(let i = 0; i < leftShownIngredients.length; i++){
-      if(!selectedIngredients.includes(leftShownIngredients[i])) selectedIngredients.push(leftShownIngredients[i])
+      // Shorthand the ingredient
+      let ingredient = leftShownIngredients[i]
+      // Move to right
+      this.moveIngredientRight(ingredient)
     }
 
+    // Empty the left list
+    leftShownIngredients = []
+    // Clear the previously highlighted array
+    prevLeftHighlighted = []
+
     this.setState({
+      prevLeftHighlighted,
+      leftShownIngredients,
       selectedIngredients
     })
   }
 
   moveToSelected(){
-    const { allIngredients, selectedIngredients } = this.state
-    for(let i = 0; i < allIngredients.length; i++){
-      if(allIngredients[i].selected && !selectedIngredients.includes(allIngredients[i])) selectedIngredients.push(allIngredients[i])
+    const { allIngredients, selectedIngredients, leftShownIngredients } = this.state
+    var { prevLeftHighlighted } = this.state
+    // Cycle through all of the ingredients
+    for(let i = 0; i < leftShownIngredients.length; i++){
+      // Shorthand the ingredient
+      let ingredient = leftShownIngredients[i]
+
+      // When selected ingredients are found move to selected
+      if(ingredient.selected) this.moveIngredientRight(ingredient)
     }
 
-    for(let j = 0; j < allIngredients.length; j++){
-      allIngredients[j].selected = false
+    // Remove the previously highlighted ingredients from the left
+    for(let i = 0; i < prevLeftHighlighted.length; i++){
+      leftShownIngredients.splice(leftShownIngredients.findIndex(ing => ing._id === prevLeftHighlighted[i]), 1)
     }
+
+    // Clear the previously highlighted array
+    prevLeftHighlighted = []
 
     this.setState({
-      allIngredients,
-      selectedIngredients
+      leftShownIngredients,
+      selectedIngredients,
+      prevLeftHighlighted
     })
   }
 

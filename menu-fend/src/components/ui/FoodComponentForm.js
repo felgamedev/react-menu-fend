@@ -147,7 +147,6 @@ class FoodComponentForm extends SingleIngredientForm {
     const { selectedIngredients, prevRightHighlighted, leftShownIngredients, allIngredients } = this.state
 
     for(let i = 0; i < prevRightHighlighted.length; i++){
-      console.log(selectedIngredients.indexOf(prevRightHighlighted[i]));
       selectedIngredients.splice(selectedIngredients.findIndex(ing => ing._id === prevRightHighlighted[i]), 1)
 
       leftShownIngredients.push(allIngredients[allIngredients.findIndex(ing => ing._id === prevRightHighlighted[i])])
@@ -185,7 +184,6 @@ class FoodComponentForm extends SingleIngredientForm {
     if(left){
       for(let j = 0; j < highlightedIngredients.length; j++){
         let ingredientIndex = allIngredients.findIndex(ing => ing._id === highlightedIngredients[j])
-        console.log("index: " + ingredientIndex);
         allIngredients[ingredientIndex].selected = true
       }
 
@@ -200,6 +198,17 @@ class FoodComponentForm extends SingleIngredientForm {
       })
     }
 
+  }
+
+  onSortLeft(e){
+    e.preventDefault()
+    let { leftShownIngredients } = this.state
+
+    leftShownIngredients = leftShownIngredients.sort((a,b) => a.name === b.name ? 0 : a.name > b.name ? 1 : -1)
+
+    this.setState({
+      leftShownIngredients
+    })
   }
 
   render(){
@@ -238,7 +247,7 @@ class FoodComponentForm extends SingleIngredientForm {
               <input type="text" value={searchValue} onChange={(e) => this.onFilterValueChange(e)} /></p>
             </label>
 
-            <button onClick={(e) => e.preventDefault() /* onSortIngredientsList */}>Sort</button>
+            {leftShownIngredients.length > 0 && <button onClick={(e) => this.onSortLeft(e)}>Sort</button>}
           </div>
 
 

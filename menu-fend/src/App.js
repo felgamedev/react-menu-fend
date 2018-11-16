@@ -49,7 +49,7 @@ class App extends Component {
   }
 
   componentDidMount(){
-    this.runGoogleLoginInit()
+    //this.runGoogleLoginInit()
   }
 
   runGoogleLoginInit(){

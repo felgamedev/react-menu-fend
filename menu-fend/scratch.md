@@ -35,11 +35,8 @@ A structure for holding what are essentially sub recipes that go into a larger i
 {
   "id": Number,
   "name": String,
-  "fixedIngredients": [<Ingredient>],
-  "fixedFoodComponents": [<FoodComponent>],
-  "optionalIngredients": [<Ingredient>],
-  "optionalFoodComponents": [<FoodComponent>]
-
+  "brandName": String,
+  "ingredients": []
 }
 ```
 

@@ -11,11 +11,10 @@ class IngredientsRoute extends Component {
     usersIngredients: null,
     allAllergens: null,
     allergenMap: null,
+    ingredientsMap: null,
     // Single/Component Mode variables
     singleIngredientMode: true,
-    componentIngredients: [],
-    componentNameValue: '',
-    componentBrandNameValue: ''
+    allFoodComponents: []
   }
 
   componentWillMount(){
@@ -34,21 +33,25 @@ class IngredientsRoute extends Component {
     var ingredients = null
     var allergens = null
     var allergenMap = new Map()
+    var ingredientMap = new Map()
+    var foodComponents = null
 
-    // Retrieve all ingredients and allergens in a chain to create a map and save to state
+    // Retrieve all ingredients, food components and allergens in a chain to create a map and save to state
     fetch(baseUrl + 'ingredient', {
       mode: "cors", headers: { "Content-type": "application/json"}
     })
     .then(response => response.json())
     .then(data => ingredients = data)
-    .then(() =>
-      {
-        // Retrieve all allergens
-        return fetch(baseUrl + 'allergen', {
-          mode: "cors", headers: { "Content-Type": "application/json"}
-        })
+    .then(() => {
+      // Add ingredients to a map
+      for(let i = 0; i < ingredients.length; i++){
+        ingredientMap.set(ingredients[i]._id, ingredients[i])
       }
-    )
+      // Retrieve all allergens
+      return fetch(baseUrl + 'allergen', {
+        mode: "cors", headers: { "Content-Type": "application/json"}
+      })
+    })
     .then(response => response.json())
     .then(data => {
       // Add a selected flag for each allergen for use in the form
@@ -59,10 +62,19 @@ class IngredientsRoute extends Component {
         allergenMap.set(allergens[i]._id, allergens[i])
       }
 
-      self.setState({
-        allIngredients: ingredients,
-        allAllergens: allergens,
-        allergenMap
+      return fetch(baseUrl + 'foodcomponent', {
+        mode: "cors", headers: { "Content-Type": "application/json"}
+      })
+      .then(response => response.json())
+      .then(data => {
+        foodComponents = data
+
+        self.setState({
+          allIngredients: ingredients,
+          allAllergens: allergens,
+          allergenMap, ingredientMap,
+          allFoodComponents: foodComponents
+        })
       })
     })
   }
@@ -86,8 +98,7 @@ class IngredientsRoute extends Component {
       this.setState({
         allIngredients,
         nameValue: '',
-        brandNameValue: '',
-        formSubmitDisabled: false
+        brandNameValue: ''
       })
     })
   }
@@ -99,7 +110,7 @@ class IngredientsRoute extends Component {
   }
 
   render(){
-    let { allIngredients, allAllergens, allergenMap } = this.state
+    let { allIngredients, allAllergens, allergenMap, ingredientMap, allFoodComponents } = this.state
 
     if(allIngredients) allIngredients.sort((a, b) => (a.name.toUpperCase() === b.name.toUpperCase() ? 0 : (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1))
 
@@ -118,7 +129,7 @@ class IngredientsRoute extends Component {
         }
 
         {(!this.state.singleIngredientMode && allAllergens) &&
-          (<FoodComponentForm baseUrl={baseUrl} allAllergens={allAllergens} allIngredients={allIngredients} />)
+          (<FoodComponentForm baseUrl={baseUrl} allergenMap={allergenMap} ingredientMap={ingredientMap} allAllergens={allAllergens} allIngredients={allIngredients} allFoodComponents={allFoodComponents}/>)
         }
       </div>)
   }

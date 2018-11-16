@@ -5,9 +5,14 @@ const escapeStringRegexp = require('escape-string-regexp')
 
 class FoodComponentForm extends SingleIngredientForm {
   state = {
+      allergenMap: null,
+      ingredientMap: null,
+
       nameValue: '',
       brandNameValue: '',
+
       searchValue: '',
+      allFoodComponents: null,
       allAllergens: [],
       allIngredients: null,
       // Ingredients in the right hand select
@@ -24,12 +29,17 @@ class FoodComponentForm extends SingleIngredientForm {
   }
 
   componentWillMount(){
-    const {allAllergens, allIngredients } = this.props
+    const {allAllergens, allIngredients, allFoodComponents, ingredientMap, allergenMap } = this.props
+
     this.setState({
       allAllergens,
       allIngredients,
-      leftShownIngredients: allIngredients.map(ingredient => ingredient)
+      leftShownIngredients: allIngredients.map(ingredient => ingredient),
+      allFoodComponents,
+      allergenMap, ingredientMap
     })
+
+
   }
 
   onFilterValueChange(e){
@@ -57,7 +67,7 @@ class FoodComponentForm extends SingleIngredientForm {
 
   onSubmit(e){
     e.preventDefault()
-    const { selectedIngredients, allIngredients, nameValue, brandNameValue } =  this.state
+    const { allIngredients, selectedIngredients, allFoodComponents, nameValue, brandNameValue } =  this.state
     var self = this
 
     let ingredientsArray = []
@@ -73,9 +83,13 @@ class FoodComponentForm extends SingleIngredientForm {
     })
     .then(response => response.json())
     .then(data => {
-      allIngredients.push(data)
+      allFoodComponents.push(data)
       self.setState({
-        allIngredients
+        allFoodComponents,
+        nameValue: '',
+        brandNameValue: '',
+        selectedIngredients: [],
+        leftShownIngredients: allIngredients.map(ing => ing)
       })
     })
   }
@@ -224,7 +238,7 @@ class FoodComponentForm extends SingleIngredientForm {
   }
 
   render(){
-    const {nameValue, brandNameValue, searchValue, leftShownIngredients, selectedIngredients, allAllergens, nameMatchFound, brandNameMatchFound, userIngredients} = this.state
+    const {nameValue, brandNameValue, searchValue, leftShownIngredients, allIngredients, selectedIngredients, allAllergens, nameMatchFound, brandNameMatchFound, userIngredients} = this.state
 
     let selectedAllergens = []
     allAllergens.forEach(allergen => {
@@ -290,6 +304,11 @@ class FoodComponentForm extends SingleIngredientForm {
 
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
         </form>
+
+        <h2>Temporary FoodComponent List</h2>
+        <ul>
+          {this.state.allFoodComponents.length > 0 && this.state.allFoodComponents.map(fc => (<li key={fc._id}>{fc.name}</li>))}
+        </ul>
       </div>
     )
   }

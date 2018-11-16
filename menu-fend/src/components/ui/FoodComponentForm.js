@@ -26,6 +26,8 @@ class FoodComponentForm extends SingleIngredientForm {
 
       nameMatchFound: false,
       brandNameMatchFound: false,
+      ingredientsMatchFound: false,
+      matchingFoodComponent: null
   }
 
   componentWillMount(){
@@ -74,6 +76,7 @@ class FoodComponentForm extends SingleIngredientForm {
     for(let i = 0; i < selectedIngredients.length; i++){
       ingredientsArray.push(selectedIngredients[i]._id)
     }
+
 
     fetch(this.props.baseUrl + "foodcomponent", {
       method: "POST",
@@ -125,7 +128,7 @@ class FoodComponentForm extends SingleIngredientForm {
       prevLeftHighlighted,
       leftShownIngredients,
       selectedIngredients
-    })
+    }, () => this.checkForMatchingComponent())
   }
 
   moveToSelected(){
@@ -152,7 +155,7 @@ class FoodComponentForm extends SingleIngredientForm {
       leftShownIngredients,
       selectedIngredients,
       prevLeftHighlighted
-    })
+    }, () => this.checkForMatchingComponent())
   }
 
   // Remove all ingredients from the selected array, back to the shown array
@@ -182,7 +185,43 @@ class FoodComponentForm extends SingleIngredientForm {
     this.setState({
       selectedIngredients,
       prevRightHighlighted: []
-    })
+    }, () => this.checkForMatchingComponent())
+  }
+
+  // Compare the currently selected ingredients to preexisting food components to ensure no matches
+  checkForMatchingComponent(){
+    const { selectedIngredients, allFoodComponents, ingredientsMatchFound } = this.state
+    // Return if there is nothing to check
+    if(selectedIngredients.length === 0) return
+    
+    for(let i = 0; i < allFoodComponents.length; i++){
+      // Only compare ingredients if they are in equal number to begin with
+      if(selectedIngredients.length === allFoodComponents[i].ingredients.length){
+        // Find out if any of the ingredients are not the same
+
+        let match = true
+        for(let si = 0; si < selectedIngredients.length; si++){
+          if(!allFoodComponents[i].ingredients.includes(selectedIngredients[si]._id)) match = false
+        }
+
+        if(match){
+          console.log("Match found!" + allFoodComponents[i].name)
+          this.setState({
+            ingredientsMatchFound: true,
+            matchingFoodComponent: allFoodComponents[i]
+          })
+          return
+        }
+      }
+    }
+
+    // If no match found, clear the flag in state
+    if(ingredientsMatchFound) {
+      this.setState({
+        ingredientsMatchFound: false,
+        matchingFoodComponent: null
+      })
+    }
   }
 
   onIngredientSelected(e){
@@ -238,7 +277,9 @@ class FoodComponentForm extends SingleIngredientForm {
   }
 
   render(){
-    const {nameValue, brandNameValue, searchValue, leftShownIngredients, allIngredients, selectedIngredients, allAllergens, nameMatchFound, brandNameMatchFound, userIngredients} = this.state
+    const {nameValue, brandNameValue, searchValue, leftShownIngredients, allIngredients,
+      selectedIngredients, allAllergens, nameMatchFound, brandNameMatchFound, ingredientsMatchFound,
+      matchingFoodComponent, userIngredients} = this.state
 
     let selectedAllergens = []
     allAllergens.forEach(allergen => {
@@ -301,8 +342,8 @@ class FoodComponentForm extends SingleIngredientForm {
           <div className="ingredients-summary">
             <p>{/* if ingredients are in the selected list, show a summary */}</p>
           </div>
-
-          <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
+          {ingredientsMatchFound && (<div>A food component, {matchingFoodComponent.name}, already exists with these exact ingredients</div>)}
+          <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound) || (ingredientsMatchFound) } type="submit">Submit</button>
         </form>
 
         <h2>Temporary FoodComponent List</h2>

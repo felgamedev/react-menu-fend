@@ -36,3 +36,5 @@ cd into menu-fend and run `npm install` for dependencies, followed by `npm start
 - Implement FoodComponent as a collection of ingredients with their cumulative allergens property
 - Implement a form for adding Menu Items, linking ingredients and an "optional" attribute for those that can be omitted (based on the recipe)
 - Create some test versions of the above on the remote server, implementing the API for realistic input
+- Check for effects if an allergen or ingredient is removed etc
+- Allow server side database updating for the removal of allergens or ingredients that are children of foodcomponents

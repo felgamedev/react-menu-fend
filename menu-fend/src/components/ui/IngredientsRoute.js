@@ -113,9 +113,7 @@ class IngredientsRoute extends Component {
     let { allIngredients, allAllergens, allergenMap, ingredientMap, allFoodComponents } = this.state
 
     if(allIngredients) allIngredients.sort((a, b) => (a.name.toUpperCase() === b.name.toUpperCase() ? 0 : (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1))
-
-    //if(allIngredients) console.log(allergenMap.get(allIngredients[4].allergens[0].acronym));
-    return(
+    return (
       <div className={(allIngredients === null) ? "ingredient-form-conatiner-disabled" : "ingredient-form-container"}>
         <h2>Add New Ingredient</h2>
 
@@ -125,7 +123,7 @@ class IngredientsRoute extends Component {
         </div>
 
         {(this.state.singleIngredientMode && allAllergens) && /* Check for allAllergens as its presence means ingredients should already be loaded in chained promise */
-          (<SingleIngredientForm allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitSingleIngredientForm.bind(this)}/>)
+          (<SingleIngredientForm allergenMap={allergenMap} allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitSingleIngredientForm.bind(this)}/>)
         }
 
         {(!this.state.singleIngredientMode && allAllergens) &&

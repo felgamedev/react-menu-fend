@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { TagSelectorCloud } from './TagSelectorCloud'
+import IngredientList from './IngredientList'
 import './IngredientForms.css'
 
 class SingleIngredientForm extends Component {
@@ -13,10 +14,11 @@ class SingleIngredientForm extends Component {
   }
 
   componentWillMount(){
-    const {allAllergens, allIngredients } = this.props
+    const {allAllergens, allIngredients, allergenMap } = this.props
     this.setState({
       allAllergens,
-      allIngredients
+      allIngredients,
+      allergenMap
     })
   }
 
@@ -91,7 +93,7 @@ class SingleIngredientForm extends Component {
   }
 
   render(){
-    const {nameValue, brandNameValue, allAllergens, nameMatchFound, brandNameMatchFound } = this.state
+    const {nameValue, brandNameValue, allergenMap, allAllergens, allIngredients, nameMatchFound, brandNameMatchFound } = this.state
 
     let selectedAllergens = []
     allAllergens.forEach(allergen => {
@@ -115,6 +117,8 @@ class SingleIngredientForm extends Component {
 
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
         </form>
+
+        {allIngredients && <IngredientList allergenMap={allergenMap} allIngredients={allIngredients} />}
       </div>
     )
   }

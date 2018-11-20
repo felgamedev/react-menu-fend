@@ -1,0 +1,21 @@
+.ingredient-row {
+  width: 600px;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.ingredient-brand-name {
+  font-weight: bold;
+}
+
+.ingredient-details {
+  flex-grow: 1;
+}
+
+.ingredient-edit-column {
+  display: flex;
+}
+
+.ingredient-edit-button, .ingredient-delete-button {
+  margin: 0 12px;
+}

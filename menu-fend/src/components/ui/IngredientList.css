@@ -1,5 +1,4 @@
 .ingredient-row {
-  width: 600px;
   display: flex;
   flex-wrap: nowrap;
 }
@@ -16,6 +15,6 @@
   display: flex;
 }
 
-.ingredient-edit-button, .ingredient-delete-button {
+.ingredient-row-button {
   margin: 0 12px;
 }

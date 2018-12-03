@@ -118,7 +118,7 @@ class SingleIngredientForm extends Component {
           <button disabled={(nameValue === '') || (nameMatchFound && brandNameMatchFound)} type="submit">Submit</button>
         </form>
 
-        {allIngredients && <IngredientList allergenMap={allergenMap} allIngredients={allIngredients} />}
+        {allIngredients && <IngredientList allergenMap={allergenMap} allIngredients={allIngredients} onUpdateSingleIngredient={this.props.onUpdateSingleIngredient}/>}
       </div>
     )
   }

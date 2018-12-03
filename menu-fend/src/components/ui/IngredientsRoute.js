@@ -103,6 +103,26 @@ class IngredientsRoute extends Component {
     })
   }
 
+  onUpdateSingleIngredient(data){
+    const {allIngredients, allAllergens } = this.state
+
+    fetch(baseUrl + "ingredient/" + data._id, {
+      method: "PUT",
+      mode: "cors",
+      body: JSON.stringify(data),
+      headers: {"Content-Type": "application/json"}
+    })
+    .then(response => response.json())
+    .then(dataBack => {
+      let index = allIngredients.findIndex(ingredient => ingredient._id === dataBack._id)
+      allIngredients[index] = dataBack
+
+      this.setState({
+        allIngredients
+      })
+    })
+  }
+
   toggleInputMode(singleIngredientMode){
       this.setState({
         singleIngredientMode
@@ -123,7 +143,7 @@ class IngredientsRoute extends Component {
         </div>
 
         {(this.state.singleIngredientMode && allAllergens) && /* Check for allAllergens as its presence means ingredients should already be loaded in chained promise */
-          (<SingleIngredientForm allergenMap={allergenMap} allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitSingleIngredientForm.bind(this)}/>)
+          (<SingleIngredientForm allergenMap={allergenMap} allAllergens={allAllergens} allIngredients={allIngredients} onSubmit={this.onSubmitSingleIngredientForm.bind(this)} onUpdateSingleIngredient={this.onUpdateSingleIngredient.bind(this)}/>)
         }
 
         {(!this.state.singleIngredientMode && allAllergens) &&
